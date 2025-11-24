@@ -113,7 +113,7 @@ export default function ContactPage() {
                                     <div>
                                         <p className="font-medium text-foreground">Location</p>
                                         <p className="text-muted-foreground">
-                                            Ganpati Computers<br />
+                                            Mahadev Computers<br />
                                             Available Online & In-Store
                                         </p>
                                     </div>

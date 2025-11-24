@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ganpati Computers | Premium Refurbished Laptops",
+  title: "Mahadev Computers | Premium Refurbished Laptops",
   description: "Quality second-hand and refurbished laptops at unbeatable prices. 6+ years of trust in Bahadurgarh, Haryana.",
 };
 

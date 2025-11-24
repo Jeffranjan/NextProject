@@ -62,7 +62,7 @@ export default function Home() {
       {/* Footer (Simple version for now) */}
       <footer className="py-12 border-t border-border bg-background">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>&copy; 2024 Ganpati Computers. All rights reserved.</p>
+          <p>&copy; 2024 Mahadev Computers. All rights reserved.</p>
         </div>
       </footer>
     </main>

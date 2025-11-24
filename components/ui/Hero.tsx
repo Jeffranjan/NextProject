@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "./Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Cpu, Zap, Battery, ChevronLeft, ChevronRight, Star, Shield, Laptop } from "lucide-react";
+import Image from "next/image";
 
 // Slide Data
 const slides = [
@@ -20,6 +21,7 @@ const slides = [
         ],
         color: "from-blue-500/20 to-purple-500/20",
         accent: "bg-blue-500",
+        image: "/images/macbook-pro-16.png",
     },
     {
         id: 2,
@@ -34,6 +36,7 @@ const slides = [
         ],
         color: "from-green-500/20 to-emerald-500/20",
         accent: "bg-green-500",
+        image: "/images/dell-xps-15.png",
     },
     {
         id: 3,
@@ -48,6 +51,7 @@ const slides = [
         ],
         color: "from-red-500/20 to-orange-500/20",
         accent: "bg-red-500",
+        image: "/images/rog-zephyrus-g14.png",
     },
     {
         id: 4,
@@ -62,6 +66,7 @@ const slides = [
         ],
         color: "from-gray-500/20 to-slate-500/20",
         accent: "bg-gray-500",
+        image: "/images/thinkpad-x1.png",
     },
     {
         id: 5,
@@ -76,6 +81,7 @@ const slides = [
         ],
         color: "from-indigo-500/20 to-pink-500/20",
         accent: "bg-indigo-500",
+        image: "/images/surface-laptop-studio.png",
     },
 ];
 
@@ -132,7 +138,7 @@ export function Hero() {
                 <div className="grid lg:grid-cols-2 gap-12 items-center h-full">
 
                     {/* Text Content Area */}
-                    <div className="relative h-[500px] flex flex-col justify-center">
+                    <div className="relative min-h-[500px] h-auto flex flex-col justify-center py-12 lg:py-0">
                         <AnimatePresence initial={false} mode="wait" custom={direction}>
                             <motion.div
                                 key={current}
@@ -156,9 +162,9 @@ export function Hero() {
                                         {slides[current].tag}
                                     </div>
 
-                                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+                                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
                                         {slides[current].title}
-                                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 text-3xl md:text-5xl mt-2">
+                                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 text-3xl md:text-5xl mt-4 pb-2">
                                             {slides[current].highlight}
                                         </span>
                                     </h1>
@@ -192,7 +198,7 @@ export function Hero() {
                     </div>
 
                     {/* Visual/Image Area */}
-                    <div className="relative h-[400px] lg:h-[600px] flex items-center justify-center">
+                    <div className="relative h-[400px] lg:h-[600px] flex items-center justify-center lg:translate-x-12">
                         <AnimatePresence initial={false} mode="wait" custom={direction}>
                             <motion.div
                                 key={current}
@@ -208,37 +214,18 @@ export function Hero() {
                                 className="absolute w-full max-w-xl"
                             >
                                 <div className="relative aspect-[4/3] w-full">
-                                    {/* Main Card */}
-                                    <div className={`absolute inset-0 bg-gradient-to-tr ${slides[current].color} rounded-2xl shadow-2xl border border-white/10 flex items-center justify-center overflow-hidden backdrop-blur-sm`}>
-                                        {/* Laptop Representation */}
-                                        <div className="w-[80%] h-[60%] bg-gray-900 rounded-lg shadow-2xl transform -rotate-x-12 rotate-y-12 rotate-z-2 transition-transform hover:rotate-0 duration-500 flex flex-col relative group">
-                                            <div className="flex-1 bg-gray-800 rounded-t-lg relative overflow-hidden border-4 border-gray-900 border-b-0">
-                                                <div className={`absolute inset-0 bg-gradient-to-br ${slides[current].color} opacity-50`} />
-                                                {/* Screen Reflection */}
-                                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent" />
-                                            </div>
-                                            <div className="h-4 bg-gray-700 rounded-b-lg border-4 border-gray-900 border-t-0 relative">
-                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-1 bg-gray-600 rounded-full" />
-                                            </div>
+                                    {/* Main Image Area - Floating */}
+                                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                                        <div className="relative w-full h-full flex items-center justify-center">
+                                            <Image
+                                                src={slides[current].image}
+                                                alt={slides[current].title}
+                                                fill
+                                                className="object-contain"
+                                                priority
+                                            />
                                         </div>
                                     </div>
-
-                                    {/* Floating Badge */}
-                                    <motion.div
-                                        animate={{ y: [0, -10, 0] }}
-                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                        className="absolute -bottom-6 -left-6 bg-background/80 backdrop-blur-md p-4 rounded-xl border border-border shadow-xl"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${slides[current].accent.replace('bg-', 'bg-').replace('500', '100')} ${slides[current].accent.replace('bg-', 'text-').replace('500', '600')}`}>
-                                                <Star size={20} />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Featured</p>
-                                                <p className="font-bold">{slides[current].tag}</p>
-                                            </div>
-                                        </div>
-                                    </motion.div>
                                 </div>
                             </motion.div>
                         </AnimatePresence>
@@ -262,8 +249,8 @@ export function Hero() {
                                 key={idx}
                                 onClick={() => goToSlide(idx)}
                                 className={`w-2 h-2 rounded-full transition-all duration-300 ${current === idx
-                                        ? `w-8 ${slides[current].accent}`
-                                        : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                                    ? `w-8 ${slides[current].accent}`
+                                    : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
                                     }`}
                             />
                         ))}

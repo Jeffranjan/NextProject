@@ -13,7 +13,7 @@ export default function AboutPage() {
             <section className="pt-32 pb-16 container mx-auto px-4">
                 <div className="max-w-3xl mx-auto text-center space-y-6">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                        About <span className="text-primary">Ganpati Computers</span>
+                        About <span className="text-primary">Mahadev Computers</span>
                     </h1>
                     <p className="text-xl text-muted-foreground leading-relaxed">
                         Your trusted destination for premium refurbished laptops in Bahadurgarh.
@@ -28,7 +28,7 @@ export default function AboutPage() {
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold">Our Story</h2>
                         <p className="text-lg text-muted-foreground">
-                            For over 6 years, Ganpati Computers has been serving the community of Bahadurgarh, Haryana.
+                            For over 6 years, Mahadev Computers has been serving the community of Bahadurgarh, Haryana.
                             We started with a simple mission: to make high-quality computing accessible to everyone.
                         </p>
                         <p className="text-lg text-muted-foreground">
@@ -43,7 +43,7 @@ export default function AboutPage() {
                     <div className="relative aspect-video rounded-2xl overflow-hidden border border-border shadow-xl">
                         <Image
                             src="/shop-front.png"
-                            alt="Ganpati Computers Shop Front"
+                            alt="Mahadev Computers Shop Front"
                             fill
                             className="object-cover"
                         />
@@ -54,7 +54,7 @@ export default function AboutPage() {
                     <div className="relative aspect-video rounded-2xl overflow-hidden border border-border shadow-xl md:order-1">
                         <Image
                             src="/shop-interior.png"
-                            alt="Inside Ganpati Computers"
+                            alt="Inside Mahadev Computers"
                             fill
                             className="object-cover"
                         />
@@ -119,7 +119,7 @@ export default function AboutPage() {
             {/* Footer */}
             <footer className="py-12 border-t border-border bg-background">
                 <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-                    <p>&copy; 2024 Ganpati Computers. All rights reserved.</p>
+                    <p>&copy; 2024 Mahadev Computers. All rights reserved.</p>
                 </div>
             </footer>
         </main>

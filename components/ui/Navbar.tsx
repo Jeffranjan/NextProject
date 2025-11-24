@@ -38,7 +38,7 @@ export function Navbar() {
                         <div className="p-2 bg-primary rounded-lg text-primary-foreground group-hover:scale-105 transition-transform">
                             <Laptop size={20} />
                         </div>
-                        <span className="text-xl font-bold tracking-tight">Ganpati Computers</span>
+                        <span className="text-xl font-bold tracking-tight">Mahadev Computers</span>
                     </Link>
 
                     {/* Desktop Navigation */}

@@ -63,8 +63,8 @@ export default function CheckoutPage() {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                 amount: orderData.amount,
                 currency: orderData.currency,
-                name: "Ganpati Computers",
-                description: "Purchase from Ganpati Computers",
+                name: "Mahadev Computers",
+                description: "Purchase from Mahadev Computers",
                 order_id: orderData.id,
                 handler: async function (response: any) {
                     // 3. Verify Payment
