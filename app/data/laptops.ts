@@ -33,7 +33,7 @@ export const laptops: Laptop[] = [
             display: '16.2" Liquid Retina XDR',
             graphics: '40-core GPU'
         },
-        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=1000',
+        image: 'https://images.unsplash.com/photo-1611186871348-aa1521469129?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         description: 'The most powerful MacBook Pro ever is here. With the blazing-fast M3 Max chip, incredible battery life, and a stunning Liquid Retina XDR display, it’s a pro laptop without equal.'
     },
     {
