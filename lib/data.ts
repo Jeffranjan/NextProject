@@ -14,6 +14,22 @@ export interface Laptop {
     category: "Gaming" | "Ultrabook" | "Business" | "Creative";
 }
 
+export interface Laptop {
+    id: string;
+    name: string;
+    brand: string;
+    price: number;
+    specs: {
+        cpu: string;
+        ram: string;
+        storage: string;
+        screen: string;
+    };
+    image: string;
+    description: string;
+    category: "Gaming" | "Ultrabook" | "Business" | "Creative";
+}
+
 export const laptops: Laptop[] = [
     {
         id: "1",
@@ -26,7 +42,7 @@ export const laptops: Laptop[] = [
             storage: "1TB SSD",
             screen: "16\" QHD+ 240Hz OLED",
         },
-        image: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=1000&auto=format&fit=crop",
+        image: "/images/blade-16.png",
         description: "The ultimate gaming machine with the world's first dual-mode mini-LED display.",
         category: "Gaming",
     },
@@ -41,7 +57,7 @@ export const laptops: Laptop[] = [
             storage: "1TB SSD",
             screen: "16.2\" Liquid Retina XDR",
         },
-        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?q=80&w=1000&auto=format&fit=crop",
+        image: "/images/macbook-pro-16.png",
         description: "Mind-blowing performance. Longest battery life ever in a Mac.",
         category: "Creative",
     },
@@ -56,7 +72,7 @@ export const laptops: Laptop[] = [
             storage: "512GB SSD",
             screen: "15.6\" 3.5K OLED Touch",
         },
-        image: "https://images.unsplash.com/photo-1593642632823-8f78536788c6?q=80&w=1000&auto=format&fit=crop",
+        image: "/images/dell-xps-15.png",
         description: "Immersive display, powerful performance, and premium design.",
         category: "Business",
     },
@@ -71,7 +87,7 @@ export const laptops: Laptop[] = [
             storage: "1TB SSD",
             screen: "14\" QHD+ 165Hz Mini-LED",
         },
-        image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=80&w=1000&auto=format&fit=crop",
+        image: "/images/rog-zephyrus-g14.png",
         description: "The world's most powerful 14-inch gaming laptop.",
         category: "Gaming",
     },
