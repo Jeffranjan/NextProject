@@ -42,7 +42,7 @@ export default function AboutPage() {
                     </div>
                     <div className="relative aspect-video rounded-2xl overflow-hidden border border-border shadow-xl">
                         <Image
-                            src="/shop-front.png"
+                            src="/images/mahadev_shop_front.png"
                             alt="Mahadev Computers Shop Front"
                             fill
                             className="object-cover"
@@ -53,7 +53,7 @@ export default function AboutPage() {
                 <div className="grid md:grid-cols-2 gap-12 items-center mb-24 md:flex-row-reverse">
                     <div className="relative aspect-video rounded-2xl overflow-hidden border border-border shadow-xl md:order-1">
                         <Image
-                            src="/shop-interior.png"
+                            src="/images/mahadev_shop_inside.png"
                             alt="Inside Mahadev Computers"
                             fill
                             className="object-cover"
