@@ -1,10 +1,10 @@
 import { Navbar } from "@/components/ui/Navbar";
-import { Button } from "@/components/ui/Button";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
-import { laptops } from "@/lib/data";
-import { ArrowLeft, Check, Shield, Truck, Star } from "lucide-react";
+import { getProduct } from "@/lib/products";
+import { ArrowLeft, Shield, Truck, Star } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
 interface ProductPageProps {
     params: Promise<{
@@ -14,7 +14,7 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
     const { id } = await params;
-    const product = laptops.find((l) => l.id === id);
+    const product = await getProduct(id);
 
     if (!product) {
         notFound();
@@ -34,13 +34,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </Link>
 
                 <div className="grid lg:grid-cols-2 gap-12">
-                    {/* Product Image Placeholder */}
+                    {/* Product Image */}
                     <div className="space-y-4">
                         <div className="aspect-[4/3] bg-secondary/50 rounded-2xl overflow-hidden relative flex items-center justify-center border border-border">
-                            <div className="text-6xl font-bold text-muted-foreground/20">
-                                {product.brand}
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-black/5" />
+                            <Image
+                                src={product.image}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                         <div className="grid grid-cols-4 gap-4">
                             {[1, 2, 3, 4].map((i) => (

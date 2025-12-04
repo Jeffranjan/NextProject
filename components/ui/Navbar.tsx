@@ -1,18 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Search, Menu, X, Laptop } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, Laptop, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "./Button";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/app/context/CartContext";
 import { CartDrawer } from "./CartDrawer";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { setIsCartOpen, cartCount } = useCart();
+    const { user, signOut } = useAuth();
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -87,7 +91,21 @@ export function Navbar() {
                                 </span>
                             )}
                         </Button>
-                        <Button>Get Started</Button>
+
+                        {user ? (
+                            <div className="flex items-center gap-2">
+                                <Link href="/dashboard">
+                                    <Button variant="ghost" size="icon">
+                                        <User size={20} />
+                                    </Button>
+                                </Link>
+                                <Button onClick={() => signOut()} variant="outline">Sign Out</Button>
+                            </div>
+                        ) : (
+                            <Link href="/auth">
+                                <Button>Get Started</Button>
+                            </Link>
+                        )}
                     </div>
 
                     {/* Mobile Menu Toggle */}
@@ -138,7 +156,16 @@ export function Navbar() {
                                     Contact
                                 </Link>
                                 <div className="flex gap-4 pt-2">
-                                    <Button className="w-full">Get Started</Button>
+                                    {user ? (
+                                        <Button className="w-full" onClick={() => {
+                                            signOut();
+                                            setIsMobileMenuOpen(false);
+                                        }}>Sign Out</Button>
+                                    ) : (
+                                        <Link href="/auth" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <Button className="w-full">Get Started</Button>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>

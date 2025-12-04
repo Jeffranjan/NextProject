@@ -1,11 +1,12 @@
+
 import { Hero } from "@/components/ui/Hero";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { laptops } from "@/lib/data";
-import { ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { getFeaturedProducts } from "@/lib/products";
 import Link from "next/link";
+import { ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 
-export default function Home() {
-  const featuredLaptops = laptops.slice(0, 4);
+export default async function Home() {
+  const featuredProducts = await getFeaturedProducts();
 
   return (
     <main className="min-h-screen bg-background">
@@ -24,8 +25,8 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredLaptops.map((laptop) => (
-            <ProductCard key={laptop.id} product={laptop} />
+          {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>

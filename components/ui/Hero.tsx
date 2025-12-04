@@ -127,7 +127,7 @@ export function Hero() {
     };
 
     return (
-        <section className="relative min-h-[90vh] flex items-center pt-16 overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background">
+        <section className="relative min-h-[90vh] flex items-center pt-32 overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background">
             {/* Background Ambient Glow - Changes with slide */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none transition-colors duration-1000">
                 <div className={`absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full blur-[100px] opacity-20 transition-colors duration-1000 ${slides[current].accent.replace('bg-', 'bg-')}`} />
