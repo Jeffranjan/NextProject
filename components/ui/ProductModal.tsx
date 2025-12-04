@@ -1,6 +1,6 @@
 "use client";
 
-import { Laptop } from "@/lib/data";
+import { Laptop } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ShoppingCart, Check } from "lucide-react";
 import Image from "next/image";

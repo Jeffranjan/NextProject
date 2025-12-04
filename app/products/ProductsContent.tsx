@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductCard } from "@/components/ui/ProductCard";
-import { Laptop } from "@/lib/data";
+import { Laptop } from "@/lib/types";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Laptop } from "@/lib/data";
+import { Laptop } from "@/lib/types";
 import { Button } from "./Button";
 import { motion } from "framer-motion";
 import { ShoppingCart, Star } from "lucide-react";

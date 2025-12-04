@@ -2,7 +2,7 @@
 
 import { Button } from "./Button";
 import { useCart } from "@/app/context/CartContext";
-import { Laptop } from "@/lib/data";
+import { Laptop } from "@/lib/types";
 
 interface AddToCartButtonProps {
     product: Laptop;
