@@ -67,39 +67,34 @@ export default function AddProductPage() {
         setIsSubmitting(true);
 
         try {
-            // 1. Upload Image
-            const fileExt = imageFile.name.split(".").pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
+            // Create FormData to send file + data to server
+            const formDataToSend = new FormData();
+            formDataToSend.append("image", imageFile);
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("brand", formData.brand);
+            formDataToSend.append("price", formData.price);
+            formDataToSend.append("category", formData.category);
+            formDataToSend.append("description", formData.description);
 
-            const { error: uploadError } = await supabase.storage
-                .from("products")
-                .upload(filePath, imageFile);
+            // Serialize specs to JSON string
+            const specs = {
+                cpu: formData.cpu,
+                ram: formData.ram,
+                storage: formData.storage,
+                screen: formData.screen,
+            };
+            formDataToSend.append("specs", JSON.stringify(specs));
 
-            if (uploadError) throw uploadError;
-
-            // 2. Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from("products")
-                .getPublicUrl(filePath);
-
-            // 3. Insert Product
-            const { error: insertError } = await supabase.from("products").insert({
-                name: formData.name,
-                brand: formData.brand,
-                price: parseFloat(formData.price),
-                category: formData.category,
-                description: formData.description,
-                image: publicUrl,
-                specs: {
-                    cpu: formData.cpu,
-                    ram: formData.ram,
-                    storage: formData.storage,
-                    screen: formData.screen,
-                },
+            // Send to API
+            const response = await fetch("/api/products", {
+                method: "POST",
+                body: formDataToSend,
             });
 
-            if (insertError) throw insertError;
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to create product");
+            }
 
             alert("Product added successfully!");
             router.push("/dashboard");
