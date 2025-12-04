@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function DashboardPage() {
@@ -36,9 +37,16 @@ export default function DashboardPage() {
                             Welcome back, {user.email}
                         </p>
                     </div>
-                    <Button variant="outline" onClick={signOut}>
-                        Sign Out
-                    </Button>
+                    <div className="flex items-center gap-4">
+                        {user.email?.toLowerCase() === "ranjanguptajeff@gmail.com" && (
+                            <Link href="/dashboard/add-product">
+                                <Button>Add Product</Button>
+                            </Link>
+                        )}
+                        <Button variant="outline" onClick={signOut}>
+                            Sign Out
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
