@@ -3,15 +3,23 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "./Button";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Cpu, Zap, Battery, ChevronLeft, ChevronRight, Star, Shield, Laptop } from "lucide-react";
+import { ArrowRight, Cpu, Zap, Battery, ChevronLeft, ChevronRight, Star, Shield, Laptop as LaptopIcon } from "lucide-react";
 import Image from "next/image";
+import { useCart } from "@/app/context/CartContext";
+import { useRouter } from "next/navigation";
+import { Laptop } from "@/lib/types";
 
+// Slide Data
 // Slide Data
 const slides = [
     {
-        id: 1,
+        id: "1478f0ed-d71d-4b86-bd65-75a348467e59",
         tag: "New Release",
         title: "MacBook Pro 16",
+        name: "MacBook Pro 16",
+        brand: "Apple",
+        price: 249900,
+        category: "Creative",
         highlight: "M3 Max Powerhouse",
         description: "Experience uncompromised performance with the M3 Max chip. Designed for creators who demand the absolute best.",
         specs: [
@@ -19,14 +27,24 @@ const slides = [
             { icon: Zap, label: "Memory", value: "128GB" },
             { icon: Battery, label: "Battery", value: "22 Hrs" },
         ],
+        technicalSpecs: {
+            cpu: "M3 Max",
+            ram: "128GB",
+            storage: "2TB SSD",
+            screen: "16-inch Liquid Retina XDR"
+        },
         color: "from-blue-500/20 to-purple-500/20",
         accent: "bg-blue-500",
         image: "/images/macbook-pro-16.png",
     },
     {
-        id: 2,
+        id: "12c8fe1a-7d19-40f1-893e-f527cfcd606c",
         tag: "Best Seller",
         title: "Dell XPS 15",
+        name: "Dell XPS 15",
+        brand: "Dell",
+        price: 189900,
+        category: "Business",
         highlight: "InfinityEdge Display",
         description: "Immersive 3.5K OLED display in a stunningly crafted chassis. The perfect balance of power and portability.",
         specs: [
@@ -34,14 +52,24 @@ const slides = [
             { icon: Cpu, label: "Intel", value: "i9-13900H" },
             { icon: Zap, label: "Graphics", value: "RTX 4070" },
         ],
+        technicalSpecs: {
+            cpu: "Intel Core i9-13900H",
+            ram: "32GB",
+            storage: "1TB SSD",
+            screen: "15.6-inch 3.5K OLED"
+        },
         color: "from-green-500/20 to-emerald-500/20",
         accent: "bg-green-500",
         image: "/images/dell-xps-15.png",
     },
     {
-        id: 3,
+        id: "7182e7dc-00e0-452c-8fa2-8173d457d364",
         tag: "Gaming Beast",
         title: "ROG Zephyrus G14",
+        name: "ROG Zephyrus G14",
+        brand: "Asus",
+        price: 149900,
+        category: "Gaming",
         highlight: "Ultra-Portable Gaming",
         description: "Dominate the competition with the world's most powerful 14-inch gaming laptop. Anime Matrix LED display included.",
         specs: [
@@ -49,29 +77,49 @@ const slides = [
             { icon: Cpu, label: "Ryzen", value: "9 7940HS" },
             { icon: Shield, label: "Cooling", value: "Vapor" },
         ],
+        technicalSpecs: {
+            cpu: "AMD Ryzen 9 7940HS",
+            ram: "16GB",
+            storage: "1TB SSD",
+            screen: "14-inch QHD+ 165Hz"
+        },
         color: "from-red-500/20 to-orange-500/20",
         accent: "bg-red-500",
         image: "/images/rog-zephyrus-g14.png",
     },
     {
-        id: 4,
+        id: "da614d62-ccfd-492d-9393-9c063268397b",
         tag: "Business Pro",
         title: "ThinkPad X1 Carbon",
+        name: "ThinkPad X1 Carbon",
+        brand: "Lenovo",
+        price: 169900,
+        category: "Business",
         highlight: "Legendary Reliability",
         description: "Ultralight, ultrathin, and ultra-tough. The gold standard for business computing with military-grade durability.",
         specs: [
             { icon: Shield, label: "Build", value: "Carbon" },
             { icon: Battery, label: "Weight", value: "1.12kg" },
-            { icon: Laptop, label: "Keyboard", value: "Premium" },
+            { icon: LaptopIcon, label: "Keyboard", value: "Premium" },
         ],
+        technicalSpecs: {
+            cpu: "Intel Core i7-1365U",
+            ram: "16GB",
+            storage: "512GB SSD",
+            screen: "14-inch WUXGA"
+        },
         color: "from-gray-500/20 to-slate-500/20",
         accent: "bg-gray-500",
         image: "/images/thinkpad-x1.png",
     },
     {
-        id: 5,
+        id: "ada36ca6-d9b2-4eba-96b1-542b554c9b87",
         tag: "Creator's Choice",
         title: "Surface Laptop Studio",
+        name: "Surface Laptop Studio",
+        brand: "Microsoft",
+        price: 209900,
+        category: "Creative",
         highlight: "Transform Your Workflow",
         description: "Seamlessly transition from laptop to studio mode. The ultimate canvas for digital artists and designers.",
         specs: [
@@ -79,6 +127,12 @@ const slides = [
             { icon: Cpu, label: "Mode", value: "3-in-1" },
             { icon: Zap, label: "Pen", value: "Haptic" },
         ],
+        technicalSpecs: {
+            cpu: "Intel Core i7-11370H",
+            ram: "32GB",
+            storage: "1TB SSD",
+            screen: "14.4-inch PixelSense Flow"
+        },
         color: "from-indigo-500/20 to-pink-500/20",
         accent: "bg-indigo-500",
         image: "/images/surface-laptop-studio.png",
@@ -88,6 +142,27 @@ const slides = [
 export function Hero() {
     const [current, setCurrent] = useState(0);
     const [direction, setDirection] = useState(0);
+    const { addItem } = useCart();
+    const router = useRouter();
+
+    const handleShopNow = () => {
+        const currentSlide = slides[current];
+        const product: Laptop = {
+            id: currentSlide.id,
+            name: currentSlide.name,
+            brand: currentSlide.brand,
+            price: currentSlide.price,
+            category: currentSlide.category as any,
+            image: currentSlide.image,
+            description: currentSlide.description,
+            specs: currentSlide.technicalSpecs
+        };
+        addItem(product);
+    };
+
+    const handleViewSpecs = () => {
+        router.push(`/products/${slides[current].id}`);
+    };
 
     const nextSlide = useCallback(() => {
         setDirection(1);
@@ -104,10 +179,13 @@ export function Hero() {
         setCurrent(index);
     };
 
+    const [isPaused, setIsPaused] = useState(false);
+
     useEffect(() => {
+        if (isPaused) return;
         const timer = setInterval(nextSlide, 6000);
         return () => clearInterval(timer);
-    }, [nextSlide]);
+    }, [nextSlide, isPaused]);
 
     const variants = {
         enter: (direction: number) => ({
@@ -127,7 +205,11 @@ export function Hero() {
     };
 
     return (
-        <section className="relative min-h-[90vh] flex items-center pt-32 overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background">
+        <section
+            className="relative min-h-[90vh] flex items-center pt-32 overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+        >
             {/* Background Ambient Glow - Changes with slide */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none transition-colors duration-1000">
                 <div className={`absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full blur-[100px] opacity-20 transition-colors duration-1000 ${slides[current].accent.replace('bg-', 'bg-')}`} />
@@ -174,11 +256,20 @@ export function Hero() {
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                                        <Button size="lg" className="h-12 px-8 text-base group">
+                                        <Button
+                                            size="lg"
+                                            className="h-12 px-8 text-base group"
+                                            onClick={handleShopNow}
+                                        >
                                             Shop Now
                                             <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </Button>
-                                        <Button size="lg" variant="outline" className="h-12 px-8 text-base">
+                                        <Button
+                                            size="lg"
+                                            variant="outline"
+                                            className="h-12 px-8 text-base"
+                                            onClick={handleViewSpecs}
+                                        >
                                             View Specs
                                         </Button>
                                     </div>

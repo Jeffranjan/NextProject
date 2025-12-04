@@ -1,6 +1,6 @@
 "use client";
 
-import { Laptop } from "@/lib/data";
+import { Laptop } from "@/lib/types";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface CartItem extends Laptop {

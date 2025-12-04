@@ -6,6 +6,7 @@ import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import Link from "next/link";
+import NextImage from "next/image";
 
 export function CartDrawer() {
     const { isCartOpen, setIsCartOpen, items, removeItem, addItem, cartTotal } = useCart();
@@ -72,9 +73,17 @@ export function CartDrawer() {
                                         key={item.id}
                                         className="flex gap-4 p-3 rounded-lg border border-border bg-secondary/10"
                                     >
-                                        <div className="w-20 h-20 bg-secondary/30 rounded-md flex items-center justify-center text-xs text-muted-foreground">
-                                            {/* Placeholder for image */}
-                                            {item.brand}
+                                        <div className="relative w-20 h-20 bg-secondary/30 rounded-md overflow-hidden flex items-center justify-center text-xs text-muted-foreground">
+                                            {item.image ? (
+                                                <NextImage
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-contain p-2"
+                                                />
+                                            ) : (
+                                                <span>{item.brand}</span>
+                                            )}
                                         </div>
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div>
