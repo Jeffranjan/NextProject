@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect } from "react";
 
+import { AdminProductList } from "@/components/admin/AdminProductList";
+
 export default function DashboardPage() {
     const { user, signOut, isLoading } = useAuth();
     const router = useRouter();
+    const isAdmin = user?.email?.toLowerCase() === "ranjanguptajeff@gmail.com";
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -28,8 +31,8 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen pt-24 px-4 container mx-auto">
-            <div className="bg-card border border-border rounded-xl p-8 shadow-sm">
+        <div className="min-h-screen pt-24 px-4 container mx-auto pb-12">
+            <div className="bg-card border border-border rounded-xl p-8 shadow-sm mb-8">
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
@@ -38,11 +41,6 @@ export default function DashboardPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                        {user.email?.toLowerCase() === "ranjanguptajeff@gmail.com" && (
-                            <Link href="/dashboard/add-product">
-                                <Button>Add Product</Button>
-                            </Link>
-                        )}
                         <Button variant="outline" onClick={signOut}>
                             Sign Out
                         </Button>
@@ -68,6 +66,8 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </div>
+
+            {isAdmin && <AdminProductList />}
         </div>
     );
 }
