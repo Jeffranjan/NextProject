@@ -1,29 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
-export default function AuthPage() {
-    const [isLogin, setIsLogin] = useState(true);
+function AuthForm() {
+    const [view, setView] = useState<"login" | "signup" | "forgot_password">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const supabase = createClient();
+
+    useEffect(() => {
+        const errorParam = searchParams.get("error");
+        if (errorParam) {
+            setError(decodeURIComponent(errorParam));
+        }
+    }, [searchParams]);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setMessage(null);
 
         try {
-            if (isLogin) {
+            if (view === "forgot_password") {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${location.origin}/auth/callback?next=/auth/update-password`,
+                });
+                if (error) throw error;
+                setMessage("Check your email for the password reset link.");
+            } else if (view === "login") {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
@@ -39,19 +55,12 @@ export default function AuthPage() {
                     },
                 });
                 if (error) throw error;
-                // For simple email/password sign up without email verification requirement immediately blocking
-                // or if auto-confirm is on. If email confirmation is required, you might want to show a message.
-                // Assuming default Supabase config which might require email confirmation or auto-confirms.
-                // For this demo, we'll assume we can redirect or show a success message.
-                // If session is created immediately (auto-confirm), redirect.
-                // Otherwise show check email message.
 
-                // Let's check if we have a session
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
                     router.push("/dashboard");
                 } else {
-                    setError("Please check your email for the confirmation link.");
+                    setMessage("Please check your email for the confirmation link.");
                 }
             }
         } catch (err: any) {
@@ -70,35 +79,41 @@ export default function AuthPage() {
             >
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-bold mb-2">
-                        {isLogin ? "Welcome Back" : "Create Account"}
+                        {view === "login" && "Welcome Back"}
+                        {view === "signup" && "Create Account"}
+                        {view === "forgot_password" && "Reset Password"}
                     </h1>
                     <p className="text-muted-foreground text-sm">
-                        {isLogin
-                            ? "Enter your credentials to access your account"
-                            : "Sign up to get started with Mahadev Computers"}
+                        {view === "login" && "Enter your credentials to access your account"}
+                        {view === "signup" && "Sign up to get started with Mahadev Computers"}
+                        {view === "forgot_password" && "Enter your email to receive a reset link"}
                     </p>
                 </div>
 
-                <div className="flex gap-2 p-1 bg-muted rounded-lg mb-8">
-                    <button
-                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${isLogin
+                {view !== "forgot_password" && (
+                    <div className="flex gap-2 p-1 bg-muted rounded-lg mb-8">
+                        <button
+                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${view === "login"
                                 ? "bg-background text-foreground shadow-sm"
                                 : "text-muted-foreground hover:text-foreground"
-                            }`}
-                        onClick={() => setIsLogin(true)}
-                    >
-                        Sign In
-                    </button>
-                    <button
-                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${!isLogin
+                                }`}
+                            onClick={() => setView("login")}
+                            type="button"
+                        >
+                            Sign In
+                        </button>
+                        <button
+                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${view === "signup"
                                 ? "bg-background text-foreground shadow-sm"
                                 : "text-muted-foreground hover:text-foreground"
-                            }`}
-                        onClick={() => setIsLogin(false)}
-                    >
-                        Sign Up
-                    </button>
-                </div>
+                                }`}
+                            onClick={() => setView("signup")}
+                            type="button"
+                        >
+                            Sign Up
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={handleAuth} className="space-y-4">
                     <div>
@@ -111,21 +126,40 @@ export default function AuthPage() {
                             required
                         />
                     </div>
-                    <div>
-                        <label className="text-sm font-medium mb-1 block">Password</label>
-                        <Input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            minLength={6}
-                        />
-                    </div>
+                    {view !== "forgot_password" && (
+                        <div>
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="text-sm font-medium block">Password</label>
+                                {view === "login" && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setView("forgot_password")}
+                                        className="text-xs text-primary hover:underline text-blue-500"
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                )}
+                            </div>
+                            <Input
+                                type="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
+                            />
+                        </div>
+                    )}
 
                     {error && (
                         <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded-md border border-red-500/20">
                             {error}
+                        </div>
+                    )}
+
+                    {message && (
+                        <div className="p-3 text-sm text-green-500 bg-green-500/10 rounded-md border border-green-500/20">
+                            {message}
                         </div>
                     )}
 
@@ -135,14 +169,34 @@ export default function AuthPage() {
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Please wait
                             </>
-                        ) : isLogin ? (
-                            "Sign In"
                         ) : (
-                            "Sign Up"
+                            <>
+                                {view === "login" && "Sign In"}
+                                {view === "signup" && "Sign Up"}
+                                {view === "forgot_password" && "Send Reset Link"}
+                            </>
                         )}
                     </Button>
+
+                    {view === "forgot_password" && (
+                        <button
+                            type="button"
+                            onClick={() => setView("login")}
+                            className="w-full text-sm text-muted-foreground hover:text-foreground mt-4"
+                        >
+                            Back to Sign In
+                        </button>
+                    )}
                 </form>
             </motion.div>
         </div>
+    );
+}
+
+export default function AuthPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <AuthForm />
+        </Suspense>
     );
 }
