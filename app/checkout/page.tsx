@@ -66,25 +66,31 @@ export default function CheckoutPage() {
                 name: "Mahadev Computers",
                 description: "Purchase from Mahadev Computers",
                 order_id: orderData.id,
+                // image: "https://example.com/your_logo", // Add logo URL if available
                 handler: async function (response: any) {
-                    // 3. Verify Payment
-                    const verifyRes = await fetch("/api/razorpay/verify", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                        }),
-                    });
+                    // Verify Payment
+                    try {
+                        const verifyRes = await fetch("/api/razorpay/verify", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                            }),
+                        });
 
-                    const verifyData = await verifyRes.json();
+                        const verifyData = await verifyRes.json();
 
-                    if (verifyData.status === "success") {
-                        clearCart();
-                        router.push(`/success?orderId=${orderData.id}`);
-                    } else {
-                        alert("Payment verification failed. Please contact support.");
+                        if (verifyData.status === "success") {
+                            clearCart();
+                            router.push(`/success?orderId=${orderData.id}`);
+                        } else {
+                            alert("Payment verification failed. Please contact support.");
+                        }
+                    } catch (err) {
+                        console.error("Verification Error:", err);
+                        alert("An error occurred during payment verification.");
                     }
                 },
                 prefill: {
@@ -92,17 +98,33 @@ export default function CheckoutPage() {
                     email: formData.email,
                     contact: formData.phone,
                 },
+                notes: {
+                    address: "Mahadev Computers Corporate Office"
+                },
                 theme: {
-                    color: "#000000", // Customize color
+                    color: "#3399cc",
                 },
             };
 
             const rzp1 = new window.Razorpay(options);
-            rzp1.open();
 
             rzp1.on('payment.failed', function (response: any) {
-                alert(`Payment Failed: ${response.error.description}`);
+                console.error("Razorpay Payment Failed:", response.error);
+
+                const error = response.error || {};
+                const metadata = error.metadata || {};
+
+                alert(`Payment Failed Details:
+Code: ${error.code || "N/A"}
+Description: ${error.description || "Unknown Error"}
+Source: ${error.source || "N/A"}
+Step: ${error.step || "N/A"}
+Reason: ${error.reason || "N/A"}
+Order ID: ${metadata.order_id || "N/A"}
+Payment ID: ${metadata.payment_id || "N/A"}`);
             });
+
+            rzp1.open();
 
         } catch (error: any) {
             console.error("Payment Error:", error);
