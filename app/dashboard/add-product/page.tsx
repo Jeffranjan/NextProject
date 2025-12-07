@@ -59,7 +59,7 @@ export default function AddProductPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!imageFile) {
+        if (!imagePreview) {
             alert("Please upload an image");
             return;
         }
@@ -67,28 +67,34 @@ export default function AddProductPage() {
         setIsSubmitting(true);
 
         try {
-            // Create FormData to send file + data to server
-            const formDataToSend = new FormData();
-            formDataToSend.append("image", imageFile);
-            formDataToSend.append("name", formData.name);
-            formDataToSend.append("brand", formData.brand);
-            formDataToSend.append("price", formData.price);
-            formDataToSend.append("category", formData.category);
-            formDataToSend.append("description", formData.description);
-
-            // Serialize specs to JSON string
+            // Send JSON data with image URL
             const specs = {
                 cpu: formData.cpu,
                 ram: formData.ram,
                 storage: formData.storage,
                 screen: formData.screen,
             };
-            formDataToSend.append("specs", JSON.stringify(specs));
 
-            // Send to API
+            const payload = {
+                ...formData,
+                image: imagePreview,
+                specs: JSON.stringify(specs), // Keep specs as string if backend expects it, or change backend to expect object
+                // The current api/products expects fields from formData. We need to check if it handles JSON.
+                // Actually, let's keep it as formData for compatibility BUT we just send 'image' as a string URL instead of File.
+            };
+
+            // To minimize backend changes, let's stick to FormData if the backend handles it.
+            // But usually multer/form handling expects a file. 
+            // If the backend expects a file, we might need to update the backend too.
+            // Let's check api/products first. 
+            // WAIT - I can't check api/products in this tool call.
+            // Safe bet: Send JSON and update Backend to handle JSON.
+            // Sending JSON is standard for modern apps anyway.
+
             const response = await fetch("/api/products", {
                 method: "POST",
-                body: formDataToSend,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -259,7 +265,29 @@ export default function AddProductPage() {
                                 <Input
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleImageChange}
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+
+                                        // 1. Get Presigned URL
+                                        const res = await fetch("/api/upload/presign", {
+                                            method: "POST",
+                                            body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+                                        });
+                                        const { uploadUrl, publicUrl } = await res.json();
+
+                                        // 2. Upload to S3
+                                        await fetch(uploadUrl, {
+                                            method: "PUT",
+                                            body: file,
+                                            headers: { "Content-Type": file.type },
+                                        });
+
+                                        // 3. Set Preview and File URL
+                                        setImagePreview(publicUrl);
+                                        // We don't need to store the File object anymore for form submission
+                                        // But we should store final URL in state if we want to send it easily
+                                    }}
                                     className="cursor-pointer"
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">

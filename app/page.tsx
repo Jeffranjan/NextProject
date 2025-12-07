@@ -4,6 +4,8 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { getFeaturedProducts } from "@/lib/products";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { Testimonials } from "@/components/ui/Testimonials";
+import { PCBuilderPromo } from "@/components/ui/PCBuilderPromo";
 
 export default async function Home() {
   const featuredProducts = await getFeaturedProducts();
@@ -30,6 +32,14 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+
+
+      {/* PC Builder Promo */}
+      <PCBuilderPromo />
+
+      {/* Testimonials Section */}
+      <Testimonials />
 
       {/* Features Grid */}
       <section className="py-24 bg-secondary/30 border-y border-border/50">
@@ -66,6 +76,6 @@ export default async function Home() {
           <p>&copy; 2024 Mahadev Computers. All rights reserved.</p>
         </div>
       </footer>
-    </main>
+    </main >
   );
 }

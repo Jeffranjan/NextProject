@@ -19,50 +19,25 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
         }
 
-        // 3. Parse FormData
-        const formData = await request.formData();
-        const imageFile = formData.get("image") as File;
-        const name = formData.get("name") as string;
-        const brand = formData.get("brand") as string;
-        const price = formData.get("price") as string;
-        const category = formData.get("category") as string;
-        const description = formData.get("description") as string;
+        // 3. Parse JSON Body
+        // Was initialized with formData but now we send JSON
+        const body = await request.json();
+        const { name, brand, price, category, description, image, specs } = body;
 
-        // Parse specs from JSON string
-        const specsString = formData.get("specs") as string;
-        const specs = specsString ? JSON.parse(specsString) : {};
+        // Specs comes as stringified JSON from frontend, or we could send it as object.
+        // Frontend sends: specs: JSON.stringify(specs)
+        // Let's parse it if it is a string
+        const parsedSpecs = typeof specs === 'string' ? JSON.parse(specs) : specs;
 
-        if (!imageFile) {
-            return NextResponse.json({ error: "Image is required" }, { status: 400 });
+        if (!image) {
+            return NextResponse.json({ error: "Image URL is required" }, { status: 400 });
         }
 
-        // 4. Upload Image using Service Role (Bypass Storage RLS)
+        // 4. Insert Product using Service Role (Bypass DB RLS)
         const serviceSupabase = getServiceSupabase();
-        const fileExt = imageFile.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${fileName}`;
 
-        // Convert File to ArrayBuffer for upload
-        const arrayBuffer = await imageFile.arrayBuffer();
-        const buffer = new Uint8Array(arrayBuffer);
+        // No server-side upload anymore. Image is already uploaded to S3.
 
-        const { error: uploadError } = await serviceSupabase.storage
-            .from("products")
-            .upload(filePath, buffer, {
-                contentType: imageFile.type,
-                upsert: false
-            });
-
-        if (uploadError) {
-            console.error("Upload error:", uploadError);
-            return NextResponse.json({ error: "Failed to upload image: " + uploadError.message }, { status: 500 });
-        }
-
-        const { data: { publicUrl } } = serviceSupabase.storage
-            .from("products")
-            .getPublicUrl(filePath);
-
-        // 5. Insert Product using Service Role (Bypass DB RLS)
         const { data, error } = await serviceSupabase
             .from("products")
             .insert({
@@ -71,8 +46,8 @@ export async function POST(request: Request) {
                 price: parseFloat(price),
                 category,
                 description,
-                image: publicUrl,
-                specs,
+                image, // This is the public URL from S3
+                specs: parsedSpecs,
             })
             .select()
             .single();
