@@ -4,9 +4,11 @@ A modern, full-featured e-commerce platform dedicated to selling high-quality la
 
 ## 🚀 Features
 
+- **Custom PC Builder**: Interactive tools to build custom PCs with real-time pricing and compatibility checks.
 - **User Authentication**: Secure sign-up and login powered by [Supabase Auth](https://supabase.com/auth).
 - **Product Catalog**: Browse a wide range of laptops with advanced filtering and search capabilities.
-- **Admin Dashboard**: Comprehensive admin interface for managing products, inventory, and orders.
+- **Admin Dashboard**: Comprehensive admin interface with **Tabbed Navigation** for managing products, inventory, and **PC Parts**.
+- **S3 Storage Integration**: Direct-to-bucket image uploads using Supabase Storage via S3 protocol.
 - **Secure Payments**: Integrated [Razorpay](https://razorpay.com/) for safe and reliable transactions.
 - **Shopping Cart**: Dynamic cart functionality with persistent state.
 - **Responsive Design**: Fully responsive UI built with [Tailwind CSS](https://tailwindcss.com/) for all devices.
@@ -18,6 +20,7 @@ A modern, full-featured e-commerce platform dedicated to selling high-quality la
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Database & Auth**: [Supabase](https://supabase.com/)
+- **Storage**: Supabase Storage (S3 Protocol) with `@aws-sdk/client-s3`
 - **State Management**: React Context & Hooks
 - **Animations**: Framer Motion
 - **Icons**: [Lucide React](https://lucide.dev/)
@@ -63,6 +66,13 @@ Ensure you have the following installed:
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    RAZORPAY_KEY_ID=your_razorpay_key_id
    RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+   
+   # S3 Storage Configuration
+   S3_ENDPOINT=your_qt_storage_endpoint
+   S3_REGION=your_region
+   S3_ACCESS_KEY=your_access_key
+   S3_SECRET_KEY=your_secret_key
+   S3_BUCKET_NAME=products
    ```
 
 4. **Run the development server:**
