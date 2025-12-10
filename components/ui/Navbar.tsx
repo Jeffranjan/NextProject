@@ -8,12 +8,14 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/app/context/CartContext";
 import { CartDrawer } from "./CartDrawer";
+import { SearchOverlay } from "./SearchOverlay";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const { setIsCartOpen, cartCount } = useCart();
     const { user, signOut } = useAuth();
     const router = useRouter();
@@ -24,6 +26,18 @@ export function Navbar() {
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    // Global keyboard shortcut for search
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+                e.preventDefault();
+                setIsSearchOpen(true);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
     return (
@@ -75,7 +89,12 @@ export function Navbar() {
 
                     {/* Actions */}
                     <div className="hidden md:flex items-center gap-4">
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-primary"
+                            onClick={() => setIsSearchOpen(true)}
+                        >
                             <Search size={20} />
                         </Button>
                         <Button
@@ -109,12 +128,22 @@ export function Navbar() {
                     </div>
 
                     {/* Mobile Menu Toggle */}
-                    <button
-                        className="md:hidden p-2 text-muted-foreground hover:text-primary"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
+                    <div className="flex items-center gap-2 md:hidden">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-primary"
+                            onClick={() => setIsSearchOpen(true)}
+                        >
+                            <Search size={20} />
+                        </Button>
+                        <button
+                            className="p-2 text-muted-foreground hover:text-primary"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu */}
@@ -173,6 +202,7 @@ export function Navbar() {
                 </AnimatePresence>
             </nav>
             <CartDrawer />
+            <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
 }
