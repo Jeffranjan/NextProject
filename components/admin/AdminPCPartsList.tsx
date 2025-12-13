@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Part } from "@/lib/pc-parts";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Edit, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 export function AdminPCPartsList() {
     const [parts, setParts] = useState<Part[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const supabase = createClient();
     const router = useRouter();
 
     useEffect(() => {

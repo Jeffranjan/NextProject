@@ -313,7 +313,7 @@ export function Hero() {
                                                 alt={slides[current].title}
                                                 fill
                                                 className="object-contain"
-                                                priority
+                                                priority={current === 0}
                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                                             />
                                         </div>

@@ -4,13 +4,14 @@ import { PCBuilderProvider, usePCBuilder } from "@/context/PCBuilderContext";
 import { CategorySelector } from "@/components/pc-builder/CategoryList";
 import { PartSelectionGrid } from "@/components/pc-builder/PartSelectionGrid";
 import { BuildSummary } from "@/components/pc-builder/BuildSummary";
+import { MobileSummaryDrawer } from "@/components/pc-builder/MobileSummaryDrawer";
+import { MobileStepIndicator } from "@/components/pc-builder/MobileStepIndicator"; // NEW
+import { MobileWorkflowControls } from "@/components/pc-builder/MobileWorkflowControls"; // NEW
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-import { Suspense } from "react";
 
 export default function PCBuilderPage() {
     return (
@@ -27,10 +28,11 @@ export default function PCBuilderPage() {
 }
 
 function BuilderContent() {
-    const { setParts, totalPrice } = usePCBuilder();
+    const { setParts } = usePCBuilder();
     const searchParams = useSearchParams();
     const editId = searchParams.get("edit");
     const [isLoadingBuild, setIsLoadingBuild] = useState(false);
+    const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
     useEffect(() => {
         if (!editId) return;
@@ -70,9 +72,9 @@ function BuilderContent() {
     }
 
     return (
-        <div className="min-h-screen bg-background pt-16">
+        <div className="min-h-screen bg-background pt-16 pb-32 lg:pb-8">
             {/* Header - Stacks below Global Navbar (h-16) */}
-            <header className="border-b bg-card sticky top-16 z-30 shadow-sm">
+            <header className="border-b bg-card hidden lg:block sticky top-16 z-30 shadow-sm">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/" className="p-2 hover:bg-secondary rounded-full transition-colors">
@@ -81,13 +83,16 @@ function BuilderContent() {
                         <h1 className="text-xl font-bold tracking-tight">Custom PC Builder</h1>
                     </div>
 
-                    <div className="text-sm text-muted-foreground hidden sm:block">
+                    <div className="text-sm text-muted-foreground">
                         Build your dream machine. One part at a time.
                     </div>
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8">
+            {/* Mobile Header (Step Indicator) */}
+            <MobileStepIndicator />
+
+            <main className="container mx-auto px-4 lg:py-8 pt-4 pb-2">
                 <div className="grid lg:grid-cols-12 gap-6 items-start">
 
                     {/* Left Sidebar: Categories (Desktop) */}
@@ -96,17 +101,17 @@ function BuilderContent() {
                         <CategorySelector />
                     </div>
 
-                    {/* Top Bar: Categories (Mobile) */}
-                    <div className="lg:hidden sticky top-32 z-20 bg-background/80 backdrop-blur-md pb-2 -mx-4 px-4 shadow-sm">
-                        <CategorySelector />
-                    </div>
+                    {/* NOTE: We HID the Mobile CategorySelector here to enforce the guided flow. */}
+                    {/* If users want to jump, they can do so via Back/Next or we can add a 'Jump' menu later. */}
 
                     {/* Middle Column: Parts */}
-                    <div className="lg:col-span-7 space-y-6">
-                        <div className="bg-card/30 border rounded-xl p-6 mb-6">
+                    <div className="lg:col-span-7 space-y-4 sm:space-y-6">
+                        {/* Desktop-only Header for Component Selection */}
+                        <div className="hidden lg:block bg-card/30 border rounded-xl p-6 mb-6">
                             <h2 className="text-2xl font-bold mb-2">Select Component</h2>
                             <p className="text-muted-foreground text-sm">Choose the best part for your needs.</p>
                         </div>
+
                         <PartSelectionGrid />
                     </div>
 
@@ -117,18 +122,11 @@ function BuilderContent() {
                 </div>
             </main>
 
-            {/* Mobile Sticky Footer Summary Trigger */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-card border-t z-40">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <span className="text-xs text-muted-foreground block">Total Estimated Price</span>
-                        <span className="font-bold text-lg">₹{totalPrice.toLocaleString("en-IN")}</span>
-                    </div>
-                    <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium">
-                        View Summary
-                    </button>
-                </div>
-            </div>
+            {/* Mobile Summary Drawer Component */}
+            <MobileSummaryDrawer isOpen={isSummaryOpen} onClose={() => setIsSummaryOpen(false)} />
+
+            {/* Mobile Footer Controls */}
+            <MobileWorkflowControls onOpenSummary={() => setIsSummaryOpen(true)} />
         </div>
     );
 }

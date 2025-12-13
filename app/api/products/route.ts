@@ -20,13 +20,10 @@ export async function POST(request: Request) {
         }
 
         // 3. Parse JSON Body
-        // Was initialized with formData but now we send JSON
         const body = await request.json();
         const { name, brand, price, category, description, image, specs } = body;
 
         // Specs comes as stringified JSON from frontend, or we could send it as object.
-        // Frontend sends: specs: JSON.stringify(specs)
-        // Let's parse it if it is a string
         const parsedSpecs = typeof specs === 'string' ? JSON.parse(specs) : specs;
 
         if (!image) {
@@ -36,7 +33,7 @@ export async function POST(request: Request) {
         // 4. Insert Product using Service Role (Bypass DB RLS)
         const serviceSupabase = getServiceSupabase();
 
-        // No server-side upload anymore. Image is already uploaded to S3.
+
 
         const { data, error } = await serviceSupabase
             .from("products")

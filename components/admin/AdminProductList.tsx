@@ -20,9 +20,6 @@ export function AdminProductList() {
     const fetchProducts = async () => {
         try {
             // Reusing the public getProducts logic but fetching client-side for freshness
-            // Or we can just hit the API if we had a GET endpoint there.
-            // For now, let's use the server action wrapper or just fetch from supabase client directly
-            // since reading is public.
             const { createClient } = await import("@/lib/supabase/client");
             const supabase = createClient();
             const { data, error } = await supabase
@@ -32,7 +29,7 @@ export function AdminProductList() {
 
             if (error) throw error;
 
-            // Parse specs if needed (though supabase client might handle json automatically)
+
             const parsedData = data.map((p: any) => ({
                 ...p,
                 specs: typeof p.specs === 'string' ? JSON.parse(p.specs) : p.specs

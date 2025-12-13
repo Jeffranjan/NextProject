@@ -7,11 +7,17 @@ import { Button } from "@/components/ui/Button";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils"; // Added cn for class merging
 
 import { useCart } from "@/app/context/CartContext";
 import { Laptop } from "@/lib/types";
 
-export function BuildSummary() {
+interface BuildSummaryProps {
+    className?: string;
+    onClose?: () => void; // Optional callback for when actions are taken (e.g. valid for drawer)
+}
+
+export function BuildSummary({ className, onClose }: BuildSummaryProps) {
     const { selectedParts, removePart, totalPrice } = usePCBuilder();
     const { addItem } = useCart();
     const router = useRouter();
@@ -43,7 +49,7 @@ export function BuildSummary() {
                 const { error: updateError } = await supabase
                     .from("saved_builds")
                     .update({
-                        name: `Custom PC - ${new Date().toLocaleDateString()}`, // Optionally keep original name or prompt
+                        name: `Custom PC - ${new Date().toLocaleDateString()}`,
                         total_cost: totalPrice,
                         components: selectedParts,
                         created_at: new Date().toISOString() // Update timestamp
@@ -69,7 +75,8 @@ export function BuildSummary() {
             if (error) throw error;
 
             alert(editId ? "Build updated successfully!" : "Build saved successfully!");
-            // Optionally redirect to dashboard
+            if (onClose) onClose();
+            if (onClose) onClose();
         } catch (error) {
             console.error("Error saving build:", error);
             alert("Failed to save build. Please try again.");
@@ -93,7 +100,7 @@ export function BuildSummary() {
             price: totalPrice,
             description: "Custom configuration with selected components.",
             category: "Gaming",
-            image: selectedParts['case']?.image || "/images/parts/case-1.png", // Fallback or use specific case image
+            image: selectedParts['case']?.image || "/images/parts/case-1.png",
             specs: {
                 cpu: selectedParts['cpu']?.title || "N/A",
                 ram: selectedParts['ram']?.title || "N/A",
@@ -103,10 +110,11 @@ export function BuildSummary() {
         };
 
         addItem(customBuild);
+        if (onClose) onClose();
     };
 
     return (
-        <div className="bg-card border rounded-xl p-6 shadow-sm sticky top-24">
+        <div className={cn("bg-card border rounded-xl p-6 shadow-sm sticky top-24", className)}>
             <h3 className="text-xl font-bold mb-4">Your Build</h3>
 
             {/* Progress Bar */}
@@ -130,7 +138,7 @@ export function BuildSummary() {
                     return (
                         <div key={category} className="flex gap-3 group">
                             <div className="w-12 h-12 bg-zinc-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-100 overflow-hidden relative">
-                                {/* Ideally use part.image here */}
+
                                 <div className="text-[10px] text-zinc-400 font-bold">IMG</div>
                             </div>
                             <div className="flex-1 min-w-0">

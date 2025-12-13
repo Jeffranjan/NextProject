@@ -65,7 +65,7 @@ export function Navbar() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-8">
+                    <div className="hidden md:flex items-center gap-4 lg:gap-8">
                         <Link
                             href="/"
                             className={cn(
@@ -98,7 +98,8 @@ export function Navbar() {
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <span className="relative z-10 flex items-center gap-2">
-                                    Build Your Own PC
+                                    <span className="lg:hidden">Build PC</span>
+                                    <span className="hidden lg:inline">Build Your Own PC</span>
                                     {isActive("/build-custom-pc") && (
                                         <motion.div
                                             layoutId="active-dot"

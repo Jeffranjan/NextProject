@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ArrowLeft, Plus, X } from "lucide-react";
@@ -39,8 +39,6 @@ export default function PCPartForm({ initialData, mode }: PCPartFormProps) {
             if (initialSpecs.length > 0) {
                 setSpecs(initialSpecs);
             } else {
-                // Default specs if empty but editing? Or just leave empty.
-                // Let's keep the default behavior for create mode if no initialData
                 if (mode === 'create') {
                     setSpecs([
                         { key: "base_clock", value: "" },
