@@ -13,7 +13,7 @@ export async function getProducts(): Promise<Laptop[]> {
         return [];
     }
 
-    return data.map((product) => ({
+    return data.map((product: any) => ({
         ...product,
         specs: typeof product.specs === 'string' ? JSON.parse(product.specs) : product.specs,
     })) as Laptop[];
@@ -51,7 +51,7 @@ export async function getFeaturedProducts(): Promise<Laptop[]> {
         return [];
     }
 
-    return data.map((product) => ({
+    return data.map((product: any) => ({
         ...product,
         specs: typeof product.specs === 'string' ? JSON.parse(product.specs) : product.specs,
     })) as Laptop[];

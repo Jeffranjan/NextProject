@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,7 +15,7 @@ import { LayoutDashboard, Laptop, Cpu, LogOut, History, Save } from "lucide-reac
 
 type Tab = "overview" | "products" | "parts" | "history" | "builds";
 
-export default function DashboardPage() {
+function DashboardContent() {
     const { user, signOut, isLoading } = useAuth();
     const router = useRouter();
     const isAdmin = user?.email?.toLowerCase() === "ranjanguptajeff@gmail.com";
@@ -166,5 +166,17 @@ export default function DashboardPage() {
                 </motion.div>
             </AnimatePresence>
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
     );
 }

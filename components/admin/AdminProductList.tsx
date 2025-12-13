@@ -33,7 +33,7 @@ export function AdminProductList() {
             if (error) throw error;
 
             // Parse specs if needed (though supabase client might handle json automatically)
-            const parsedData = data.map(p => ({
+            const parsedData = data.map((p: any) => ({
                 ...p,
                 specs: typeof p.specs === 'string' ? JSON.parse(p.specs) : p.specs
             }));
