@@ -26,14 +26,14 @@ export function CategorySelector() {
                                 : "bg-background hover:bg-secondary border-transparent hover:border-border text-muted-foreground hover:text-foreground"
                         )}
                     >
-                        <div className={cn(
-                            "p-2 rounded-md transition-colors",
+                        <span className={cn(
+                            "p-2 rounded-md transition-colors flex items-center justify-center",
                             isActive ? "bg-primary-foreground/10 text-primary-foreground" : "bg-secondary text-foreground group-hover:bg-background"
                         )}>
                             <Icon size={16} />
-                        </div>
+                        </span>
 
-                        <div className="flex flex-col items-start min-w-0 flex-1">
+                        <span className="flex flex-col items-start min-w-0 flex-1 text-left">
                             <span className="font-medium">{cat.name}</span>
                             {isSelected && (
                                 <span className={cn(
@@ -43,15 +43,15 @@ export function CategorySelector() {
                                     {selectedParts[cat.id]?.title}
                                 </span>
                             )}
-                        </div>
+                        </span>
 
                         {isSelected && (
-                            <div className={cn(
+                            <span className={cn(
                                 "flex-shrink-0 ml-2",
                                 isActive ? "text-primary-foreground" : "text-green-500"
                             )}>
                                 <CheckCircle2 size={16} />
-                            </div>
+                            </span>
                         )}
                     </button>
                 );
