@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { Part } from "@/lib/pc-parts";
 import { supabase } from "@/lib/supabase";
 
@@ -13,6 +13,7 @@ interface PCBuilderContextType {
     setActiveCategory: (category: string) => void;
     availableParts: Part[];
     isLoading: boolean;
+    setParts: (parts: { [key: string]: Part | null }) => void;
 }
 
 const PCBuilderContext = createContext<PCBuilderContextType | undefined>(undefined);
@@ -47,36 +48,69 @@ export function PCBuilderProvider({ children }: { children: React.ReactNode }) {
         fetchParts();
     }, []);
 
+    // Load saved state from localStorage on mount
+    useEffect(() => {
+        const savedState = localStorage.getItem('pcBuilderState');
+        if (savedState) {
+            try {
+                setSelectedParts(JSON.parse(savedState));
+            } catch (e) {
+                console.error("Failed to parse saved build state", e);
+            }
+        }
+    }, []);
+
+    // Save state to localStorage whenever it changes
+    useEffect(() => {
+        if (Object.keys(selectedParts).length > 0) {
+            localStorage.setItem('pcBuilderState', JSON.stringify(selectedParts));
+        }
+    }, [selectedParts]);
+
     useEffect(() => {
         const total = Object.values(selectedParts).reduce((sum, part) => sum + (part?.price || 0), 0);
         setTotalPrice(total);
     }, [selectedParts]);
 
-    const selectPart = (category: string, part: Part) => {
+    const selectPart = useCallback((category: string, part: Part) => {
         setSelectedParts((prev) => ({ ...prev, [category]: part }));
-    };
+    }, []);
 
-    const removePart = (category: string) => {
+    const removePart = useCallback((category: string) => {
         setSelectedParts((prev) => {
             const newState = { ...prev };
             delete newState[category];
             return newState;
         });
-    };
+    }, []);
+
+    const setParts = useCallback((parts: { [key: string]: Part | null }) => {
+        setSelectedParts(parts);
+    }, []);
+
+    const value = useMemo(() => ({
+        selectedParts,
+        selectPart,
+        removePart,
+        totalPrice,
+        activeCategory,
+        setActiveCategory,
+        availableParts,
+        isLoading,
+        setParts
+    }), [
+        selectedParts,
+        selectPart,
+        removePart,
+        totalPrice,
+        activeCategory,
+        availableParts,
+        isLoading,
+        setParts
+    ]);
 
     return (
-        <PCBuilderContext.Provider
-            value={{
-                selectedParts,
-                selectPart,
-                removePart,
-                totalPrice,
-                activeCategory,
-                setActiveCategory,
-                availableParts,
-                isLoading
-            }}
-        >
+        <PCBuilderContext.Provider value={value}>
             {children}
         </PCBuilderContext.Provider>
     );

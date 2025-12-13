@@ -83,9 +83,18 @@ export function AdminPCPartsList() {
                             <tr key={part.id} className="hover:bg-muted/20 transition-colors">
                                 <td className="p-4">
                                     <div className="relative w-12 h-12 rounded-md overflow-hidden bg-secondary">
-                                        <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground font-bold bg-white">
-                                            IMG
-                                        </div>
+                                        {part.image ? (
+                                            <Image
+                                                src={part.image}
+                                                alt={part.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground font-bold bg-white">
+                                                IMG
+                                            </div>
+                                        )}
                                     </div>
                                 </td>
                                 <td className="p-4 font-medium">{part.title}</td>

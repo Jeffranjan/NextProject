@@ -45,20 +45,22 @@ function AuthForm() {
                     password,
                 });
                 if (error) throw error;
-                router.push("/dashboard");
+
+                const next = searchParams.get("next") || "/dashboard";
+                router.push(next);
+                router.refresh();
             } else {
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
-                    options: {
-                        emailRedirectTo: `${location.origin}/auth/callback`,
-                    },
                 });
                 if (error) throw error;
 
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
-                    router.push("/dashboard");
+                    const next = searchParams.get("next") || "/dashboard";
+                    router.push(next);
+                    router.refresh();
                 } else {
                     setMessage("Please check your email for the confirmation link.");
                 }

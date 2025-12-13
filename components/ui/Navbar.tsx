@@ -12,6 +12,8 @@ import { SearchOverlay } from "./SearchOverlay";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
+import { usePathname } from "next/navigation";
+
 export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,6 +21,7 @@ export function Navbar() {
     const { setIsCartOpen, cartCount } = useCart();
     const { user, signOut } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -39,6 +42,8 @@ export function Navbar() {
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
+
+    const isActive = (path: string) => pathname === path;
 
     return (
         <>
@@ -63,25 +68,62 @@ export function Navbar() {
                     <div className="hidden md:flex items-center gap-8">
                         <Link
                             href="/"
-                            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary",
+                                isActive("/") ? "text-primary" : "text-muted-foreground"
+                            )}
                         >
                             Home
                         </Link>
                         <Link
                             href="/products"
-                            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary",
+                                isActive("/products") ? "text-primary" : "text-muted-foreground"
+                            )}
                         >
                             Laptops
                         </Link>
+
+                        {/* Build Your Own PC - Featured Link */}
+                        <Link href="/build-custom-pc" className="relative group">
+                            <motion.div
+                                className={cn(
+                                    "px-4 py-2 rounded-full text-sm font-bold transition-all duration-300",
+                                    isActive("/build-custom-pc")
+                                        ? "bg-primary text-primary-foreground shadow-[0_0_15px_rgba(255,255,255,0.3)] dark:shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+                                        : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+                                )}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Build Your Own PC
+                                    {isActive("/build-custom-pc") && (
+                                        <motion.div
+                                            layoutId="active-dot"
+                                            className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"
+                                        />
+                                    )}
+                                </span>
+                            </motion.div>
+                        </Link>
+
                         <Link
                             href="/about"
-                            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary",
+                                isActive("/about") ? "text-primary" : "text-muted-foreground"
+                            )}
                         >
                             About
                         </Link>
                         <Link
                             href="/contact"
-                            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary",
+                                isActive("/contact") ? "text-primary" : "text-muted-foreground"
+                            )}
                         >
                             Contact
                         </Link>
@@ -158,28 +200,51 @@ export function Navbar() {
                             <div className="flex flex-col p-4 gap-4">
                                 <Link
                                     href="/"
-                                    className="text-sm font-medium py-2 border-b border-border/50"
+                                    className={cn(
+                                        "text-sm font-medium py-2 border-b border-border/50",
+                                        isActive("/") ? "text-primary" : "text-muted-foreground"
+                                    )}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     Home
                                 </Link>
                                 <Link
                                     href="/products"
-                                    className="text-sm font-medium py-2 border-b border-border/50"
+                                    className={cn(
+                                        "text-sm font-medium py-2 border-b border-border/50",
+                                        isActive("/products") ? "text-primary" : "text-muted-foreground"
+                                    )}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     Laptops
                                 </Link>
                                 <Link
+                                    href="/build-custom-pc"
+                                    className={cn(
+                                        "text-sm font-bold py-2 border-b border-border/50 flex items-center justify-between",
+                                        isActive("/build-custom-pc") ? "text-primary" : "text-muted-foreground"
+                                    )}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Build Your Own PC
+                                    <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">New</span>
+                                </Link>
+                                <Link
                                     href="/about"
-                                    className="text-sm font-medium py-2 border-b border-border/50"
+                                    className={cn(
+                                        "text-sm font-medium py-2 border-b border-border/50",
+                                        isActive("/about") ? "text-primary" : "text-muted-foreground"
+                                    )}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     About
                                 </Link>
                                 <Link
                                     href="/contact"
-                                    className="text-sm font-medium py-2 border-b border-border/50"
+                                    className={cn(
+                                        "text-sm font-medium py-2 border-b border-border/50",
+                                        isActive("/contact") ? "text-primary" : "text-muted-foreground"
+                                    )}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     Contact

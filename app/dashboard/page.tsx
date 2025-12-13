@@ -3,21 +3,33 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AdminProductList } from "@/components/admin/AdminProductList";
 import { AdminPCPartsList } from "@/components/admin/AdminPCPartsList";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Laptop, Cpu, LogOut } from "lucide-react";
+import { UserPurchaseHistory } from "@/components/dashboard/UserPurchaseHistory";
+import { UserSavedBuilds } from "@/components/dashboard/UserSavedBuilds";
+import { LayoutDashboard, Laptop, Cpu, LogOut, History, Save } from "lucide-react";
 
-type Tab = "overview" | "products" | "parts";
+type Tab = "overview" | "products" | "parts" | "history" | "builds";
 
 export default function DashboardPage() {
     const { user, signOut, isLoading } = useAuth();
     const router = useRouter();
     const isAdmin = user?.email?.toLowerCase() === "ranjanguptajeff@gmail.com";
-    const [activeTab, setActiveTab] = useState<Tab>("overview");
+    // const isAdmin = false; // TEMPORARY FOR VERIFICATION
+    const [activeTab, setActiveTab] = useState<Tab>(isAdmin ? "overview" : "history");
+
+    const searchParams = useSearchParams();
+    const activeTabParam = searchParams.get("tab");
+
+    useEffect(() => {
+        if (activeTabParam && ["overview", "products", "parts", "history", "builds"].includes(activeTabParam)) {
+            setActiveTab(activeTabParam as Tab);
+        }
+    }, [activeTabParam]);
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -35,11 +47,18 @@ export default function DashboardPage() {
 
     if (!user) return null;
 
-    const tabs = [
+    const adminTabs = [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
         { id: "products", label: "Laptops", icon: Laptop },
         { id: "parts", label: "PC Components", icon: Cpu },
     ];
+
+    const userTabs = [
+        { id: "history", label: "Purchase History", icon: History },
+        { id: "builds", label: "Saved Builds", icon: Save },
+    ];
+
+    const tabs = isAdmin ? adminTabs : userTabs;
 
     return (
         <div className="min-h-screen pt-24 px-4 container mx-auto pb-12">
@@ -47,9 +66,9 @@ export default function DashboardPage() {
             {/* Dashboard Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">{isAdmin ? "Admin Dashboard" : "Dashboard"}</h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage your store, products, and inventory.
+                        {isAdmin ? "Manage your store, products, and inventory." : "Check Your Purchases and Builds"}
                     </p>
                 </div>
 
@@ -65,37 +84,35 @@ export default function DashboardPage() {
             </div>
 
             {/* Tab Navigation */}
-            {isAdmin && (
-                <div className="flex flex-wrap gap-2 mb-8 border-b border-border pb-1">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.id;
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id as Tab)}
-                                className={cn(
-                                    "flex items-center gap-2 px-4 py-2.5 rounded-t-lg transition-all relative font-medium text-sm md:text-base",
-                                    isActive
-                                        ? "text-primary"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                )}
-                            >
-                                <Icon size={18} />
-                                {tab.label}
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="activeTabBorder"
-                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                                        initial={false}
-                                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                    />
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
+            <div className="flex flex-wrap gap-2 mb-8 border-b border-border pb-1">
+                {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as Tab)}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2.5 rounded-t-lg transition-all relative font-medium text-sm md:text-base",
+                                isActive
+                                    ? "text-primary"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            <Icon size={18} />
+                            {tab.label}
+                            {isActive && (
+                                <motion.div
+                                    layoutId="activeTabBorder"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                                    initial={false}
+                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                />
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
 
             {/* Tab Content */}
             <AnimatePresence mode="wait">
@@ -137,6 +154,14 @@ export default function DashboardPage() {
                         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                             <AdminPCPartsList />
                         </div>
+                    )}
+
+                    {activeTab === "history" && !isAdmin && (
+                        <UserPurchaseHistory />
+                    )}
+
+                    {activeTab === "builds" && !isAdmin && (
+                        <UserSavedBuilds />
                     )}
                 </motion.div>
             </AnimatePresence>

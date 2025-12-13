@@ -4,6 +4,9 @@ import { usePCBuilder } from "@/context/PCBuilderContext";
 import { CATEGORIES } from "@/lib/pc-parts";
 import { ShoppingCart, Trash2, Save } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 import { useCart } from "@/app/context/CartContext";
 import { Laptop } from "@/lib/types";
@@ -11,6 +14,69 @@ import { Laptop } from "@/lib/types";
 export function BuildSummary() {
     const { selectedParts, removePart, totalPrice } = usePCBuilder();
     const { addItem } = useCart();
+    const router = useRouter();
+    const [isSaving, setIsSaving] = useState(false);
+
+    const searchParams = useSearchParams(); // Get search params
+    const editId = searchParams.get("edit"); // Get edit ID
+
+    const handleSaveBuild = async () => {
+        if (selectedCount === 0) return;
+        setIsSaving(true);
+
+        try {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                // Redirect to login if not authenticated
+                // State is automatically saved to localStorage by PCBuilderContext
+                const next = "/build-custom-pc";
+                router.push(`/auth?next=${next}`);
+                return;
+            }
+
+            let error;
+
+            if (editId) {
+                // UPDATE existing build
+                const { error: updateError } = await supabase
+                    .from("saved_builds")
+                    .update({
+                        name: `Custom PC - ${new Date().toLocaleDateString()}`, // Optionally keep original name or prompt
+                        total_cost: totalPrice,
+                        components: selectedParts,
+                        created_at: new Date().toISOString() // Update timestamp
+                    })
+                    .eq("id", editId)
+                    .eq("user_id", user.id); // Security check
+
+                error = updateError;
+            } else {
+                // INSERT new build
+                const { error: insertError } = await supabase
+                    .from("saved_builds")
+                    .insert({
+                        user_id: user.id,
+                        name: `Custom PC - ${new Date().toLocaleDateString()}`,
+                        total_cost: totalPrice,
+                        components: selectedParts
+                    });
+
+                error = insertError;
+            }
+
+            if (error) throw error;
+
+            alert(editId ? "Build updated successfully!" : "Build saved successfully!");
+            // Optionally redirect to dashboard
+        } catch (error) {
+            console.error("Error saving build:", error);
+            alert("Failed to save build. Please try again.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const selectedCount = Object.keys(selectedParts).length;
     const totalCategories = CATEGORIES.length;
@@ -100,8 +166,18 @@ export function BuildSummary() {
                     <ShoppingCart size={18} className="mr-2" /> Add to Cart
                 </Button>
 
-                <Button variant="outline" className="w-full" disabled={selectedCount === 0}>
-                    <Save size={18} className="mr-2" /> Save Build
+                <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={selectedCount === 0 || isSaving}
+                    onClick={handleSaveBuild}
+                >
+                    {isSaving ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                    ) : (
+                        <Save size={18} className="mr-2" />
+                    )}
+                    {isSaving ? "Saving..." : (editId ? "Update Build" : "Save Build")}
                 </Button>
             </div>
         </div>

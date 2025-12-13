@@ -2,6 +2,8 @@
 
 import { Laptop } from "@/lib/types";
 import { createContext, useContext, useState, ReactNode } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter, usePathname } from "next/navigation";
 
 interface CartItem extends Laptop {
     quantity: number;
@@ -23,8 +25,16 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const { user } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
 
     const addItem = (product: Laptop) => {
+        if (!user) {
+            router.push(`/auth?next=${pathname}`);
+            return;
+        }
+
         setItems((prev) => {
             const existing = prev.find((item) => item.id === product.id);
             if (existing) {

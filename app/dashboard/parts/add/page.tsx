@@ -1,6 +1,6 @@
 "use client";
 
-import AddPCPartForm from "@/components/admin/AddPCPartForm";
+import PCPartForm from "@/components/admin/PCPartForm";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -31,7 +31,7 @@ export default function AddPartPage() {
 
     return (
         <div className="min-h-screen pt-24 pb-12 px-4 container mx-auto">
-            <AddPCPartForm />
+            <PCPartForm mode="create" />
         </div>
     );
 }

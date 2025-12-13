@@ -29,12 +29,18 @@ export function PartCard({ part, isSelected, onSelect }: PartCardProps) {
             </div>
 
             <div className="aspect-[4/3] bg-gradient-to-br from-zinc-50 to-zinc-100 p-6 relative flex items-center justify-center overflow-hidden">
-                {/* In a real app, use next/image here */}
-                {/* <Image src={part.image} alt={part.title} fill className="object-contain p-4" /> */}
-
-                <div className="w-24 h-24 rounded-full bg-white shadow-inner flex items-center justify-center text-zinc-300 font-bold text-lg border border-zinc-100 relative z-10">
-                    IMG
-                </div>
+                {part.image ? (
+                    <Image
+                        src={part.image}
+                        alt={part.title}
+                        fill
+                        className="object-contain p-4 transition-transform duration-500 group-hover:scale-110"
+                    />
+                ) : (
+                    <div className="w-24 h-24 rounded-full bg-white shadow-inner flex items-center justify-center text-zinc-300 font-bold text-lg border border-zinc-100 relative z-10">
+                        IMG
+                    </div>
+                )}
 
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500" />

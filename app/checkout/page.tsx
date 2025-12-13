@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/app/context/CartContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -16,6 +17,7 @@ declare global {
 }
 
 export default function CheckoutPage() {
+    const { user, isLoading: isAuthLoading } = useAuth();
     const { items, cartTotal, clearCart } = useCart();
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
@@ -25,17 +27,32 @@ export default function CheckoutPage() {
         phone: "",
     });
 
-    // Redirect if cart is empty
+    // Check authentication
     useEffect(() => {
-        if (items.length === 0) {
+        if (!isAuthLoading && !user) {
+            router.push("/auth?next=/checkout");
+        }
+    }, [user, isAuthLoading, router]);
+
+    // Redirect if cart is empty (only if authenticated)
+    useEffect(() => {
+        if (!isAuthLoading && user && items.length === 0) {
             router.push("/");
         }
-    }, [items, router]);
+    }, [items, router, user, isAuthLoading]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+
+    if (isAuthLoading || !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     const handlePayment = async (e: React.FormEvent) => {
         e.preventDefault();

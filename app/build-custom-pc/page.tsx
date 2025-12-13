@@ -6,6 +6,9 @@ import { PartSelectionGrid } from "@/components/pc-builder/PartSelectionGrid";
 import { BuildSummary } from "@/components/pc-builder/BuildSummary";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function PCBuilderPage() {
     return (
@@ -16,7 +19,47 @@ export default function PCBuilderPage() {
 }
 
 function BuilderContent() {
-    const { totalPrice } = usePCBuilder();
+    const { setParts, totalPrice } = usePCBuilder();
+    const searchParams = useSearchParams();
+    const editId = searchParams.get("edit");
+    const [isLoadingBuild, setIsLoadingBuild] = useState(false);
+
+    useEffect(() => {
+        if (!editId) return;
+
+        async function fetchSavedBuild() {
+            setIsLoadingBuild(true);
+            try {
+                const supabase = createClient();
+                const { data, error } = await supabase
+                    .from("saved_builds")
+                    .select("components")
+                    .eq("id", editId)
+                    .single();
+
+                if (error) throw error;
+                if (data?.components) {
+                    setParts(data.components);
+                    console.log("Build hydrated:", data.components);
+                }
+            } catch (error) {
+                console.error("Error fetching saved build:", error);
+                // Optionally show error toast
+            } finally {
+                setIsLoadingBuild(false);
+            }
+        }
+
+        fetchSavedBuild();
+    }, [editId, setParts]);
+
+    if (isLoadingBuild) {
+        return (
+            <div className="min-h-screen bg-background pt-24 flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background pt-16">
