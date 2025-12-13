@@ -10,10 +10,18 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+import { Suspense } from "react";
+
 export default function PCBuilderPage() {
     return (
         <PCBuilderProvider>
-            <BuilderContent />
+            <Suspense fallback={
+                <div className="min-h-screen bg-background pt-24 flex justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            }>
+                <BuilderContent />
+            </Suspense>
         </PCBuilderProvider>
     );
 }
