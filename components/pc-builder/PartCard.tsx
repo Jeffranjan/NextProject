@@ -35,6 +35,7 @@ export function PartCard({ part, isSelected, onSelect }: PartCardProps) {
                         alt={part.title}
                         fill
                         className="object-contain p-4 transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 ) : (
                     <div className="w-24 h-24 rounded-full bg-white shadow-inner flex items-center justify-center text-zinc-300 font-bold text-lg border border-zinc-100 relative z-10">

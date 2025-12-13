@@ -46,6 +46,8 @@ export default function AboutPage() {
                             alt="Mahadev Computers Shop Front"
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            priority
                         />
                     </div>
                 </div>
@@ -57,6 +59,7 @@ export default function AboutPage() {
                             alt="Inside Mahadev Computers"
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     </div>
                     <div className="space-y-6 md:order-2">

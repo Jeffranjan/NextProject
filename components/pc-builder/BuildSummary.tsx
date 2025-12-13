@@ -173,7 +173,7 @@ export function BuildSummary() {
                     onClick={handleSaveBuild}
                 >
                     {isSaving ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                        <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2 inline-block"></span>
                     ) : (
                         <Save size={18} className="mr-2" />
                     )}

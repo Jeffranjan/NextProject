@@ -12,6 +12,7 @@ import { ProductModal } from "./ProductModal";
 
 interface ProductCardProps {
     product: Laptop;
+    priority?: boolean;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -31,6 +32,10 @@ export function ProductCard({ product }: ProductCardProps) {
                         alt={product.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={product.image.includes("macbook-pro-16") ? true : false}
+                        // Manual override for specific problem image, plus generic prop support if passed
+                        loading={product.image.includes("macbook-pro-16") ? "eager" : "lazy"}
                     />
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
 

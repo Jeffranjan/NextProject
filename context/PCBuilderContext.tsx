@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { Part } from "@/lib/pc-parts";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 interface PCBuilderContextType {
     selectedParts: { [key: string]: Part | null };
@@ -24,6 +24,9 @@ export function PCBuilderProvider({ children }: { children: React.ReactNode }) {
     const [totalPrice, setTotalPrice] = useState(0);
     const [availableParts, setAvailableParts] = useState<Part[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Create supabase client
+    const supabase = createClient();
 
     // Fetch parts from Supabase on mount
     useEffect(() => {

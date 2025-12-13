@@ -171,6 +171,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                                         alt={product.name}
                                                         fill
                                                         className="object-cover"
+                                                        sizes="48px"
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0">

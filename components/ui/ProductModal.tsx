@@ -61,6 +61,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                                     alt={product.name}
                                     fill
                                     className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                             </div>
 
