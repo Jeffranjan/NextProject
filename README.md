@@ -1,4 +1,4 @@
-# Ganpati Computers
+# Ganpati Computers - An Modern E-commerce Platform With an Admin Dashboard
 
 A modern, full-featured e-commerce platform dedicated to selling high-quality laptops. Built with the latest web technologies to ensure a seamless and secure shopping experience.
 
