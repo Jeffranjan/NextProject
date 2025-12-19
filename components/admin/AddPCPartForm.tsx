@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ArrowLeft, Plus, X } from "lucide-react";
@@ -76,12 +77,14 @@ export default function AddPCPartForm() {
 
             if (error) throw error;
 
-            alert("Part added successfully!");
+            if (error) throw error;
+
+            toast.success("Part added successfully!");
             router.push("/dashboard");
             router.refresh();
         } catch (error: any) {
             console.error("Error adding part:", error);
-            alert("Error adding part: " + error.message);
+            toast.error("Error adding part: " + error.message);
         } finally {
             setIsSubmitting(false);
         }

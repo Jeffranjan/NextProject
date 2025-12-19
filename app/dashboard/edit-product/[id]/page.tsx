@@ -16,9 +16,7 @@ const ADMIN_EMAIL = "ranjanguptajeff@gmail.com";
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { user, isLoading } = useAuth();
     const router = useRouter();
-    // Unwrap params using use() hook as per Next.js 15+ patterns or await it if it's a promise
-    // Since this is a client component, params is a promise in newer Next.js versions
-    // But to be safe and compatible, let's handle it as a promise.
+
     const [id, setId] = useState<string>("");
 
     const [isSubmitting, setIsSubmitting] = useState(false);

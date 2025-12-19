@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { Navbar } from "@/components/ui/Navbar";
+import { Toaster } from "@/components/ui/Toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <Navbar />
+            <Toaster />
             {children}
           </CartProvider>
         </AuthProvider>

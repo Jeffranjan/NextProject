@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Laptop } from "@/lib/types";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Edit, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
@@ -54,10 +55,11 @@ export function AdminProductList() {
             if (!response.ok) throw new Error("Failed to delete");
 
             setProducts(products.filter(p => p.id !== id));
+            toast.success("Product deleted successfully");
             router.refresh();
         } catch (error) {
             console.error("Error deleting product:", error);
-            alert("Failed to delete product");
+            toast.error("Failed to delete product");
         }
     };
 

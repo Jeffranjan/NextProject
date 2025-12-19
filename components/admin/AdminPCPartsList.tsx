@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Part } from "@/lib/pc-parts";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Edit, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
@@ -48,10 +49,11 @@ export function AdminPCPartsList() {
             if (error) throw error;
 
             setParts(parts.filter(p => p.id !== id));
+            toast.success("Part deleted successfully");
             router.refresh();
         } catch (error) {
             console.error("Error deleting part:", error);
-            alert("Failed to delete part");
+            toast.error("Failed to delete part");
         }
     };
 

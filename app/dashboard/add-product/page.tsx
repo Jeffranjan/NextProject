@@ -67,7 +67,7 @@ export default function AddProductPage() {
         setIsSubmitting(true);
 
         try {
-            // Send JSON data with image URL
+
             const specs = {
                 cpu: formData.cpu,
                 ram: formData.ram,
@@ -78,18 +78,8 @@ export default function AddProductPage() {
             const payload = {
                 ...formData,
                 image: imagePreview,
-                specs: JSON.stringify(specs), // Keep specs as string if backend expects it, or change backend to expect object
-                // The current api/products expects fields from formData. We need to check if it handles JSON.
-                // Actually, let's keep it as formData for compatibility BUT we just send 'image' as a string URL instead of File.
+                specs: JSON.stringify(specs),
             };
-
-            // To minimize backend changes, let's stick to FormData if the backend handles it.
-            // But usually multer/form handling expects a file. 
-            // If the backend expects a file, we might need to update the backend too.
-            // Let's check api/products first. 
-            // WAIT - I can't check api/products in this tool call.
-            // Safe bet: Send JSON and update Backend to handle JSON.
-            // Sending JSON is standard for modern apps anyway.
 
             const response = await fetch("/api/products", {
                 method: "POST",
@@ -269,24 +259,21 @@ export default function AddProductPage() {
                                         const file = e.target.files?.[0];
                                         if (!file) return;
 
-                                        // 1. Get Presigned URL
+
                                         const res = await fetch("/api/upload/presign", {
                                             method: "POST",
                                             body: JSON.stringify({ fileName: file.name, fileType: file.type }),
                                         });
                                         const { uploadUrl, publicUrl } = await res.json();
 
-                                        // 2. Upload to S3
+
                                         await fetch(uploadUrl, {
                                             method: "PUT",
                                             body: file,
                                             headers: { "Content-Type": file.type },
                                         });
 
-                                        // 3. Set Preview and File URL
                                         setImagePreview(publicUrl);
-                                        // We don't need to store the File object anymore for form submission
-                                        // But we should store final URL in state if we want to send it easily
                                     }}
                                     className="cursor-pointer"
                                 />

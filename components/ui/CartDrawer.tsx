@@ -11,7 +11,7 @@ import NextImage from "next/image";
 export function CartDrawer() {
     const { isCartOpen, setIsCartOpen, items, removeItem, addItem, cartTotal } = useCart();
 
-    // Prevent body scroll when cart is open
+
     useEffect(() => {
         if (isCartOpen) {
             document.body.style.overflow = "hidden";
@@ -97,10 +97,7 @@ export function CartDrawer() {
                                                     <button
                                                         onClick={() => {
                                                             if (item.quantity > 1) {
-                                                                // Logic to decrease quantity would go here, 
-                                                                // for now we just remove if 1 or implement decrease in context
-                                                                // Simplified: just re-add or remove
-                                                                // Ideally context should have updateQuantity
+                                                                removeItem(item.id);
                                                             }
                                                         }}
                                                         className="p-1 hover:bg-secondary rounded"

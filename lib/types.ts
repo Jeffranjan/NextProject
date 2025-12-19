@@ -34,3 +34,31 @@ export interface SavedBuild {
     total_cost: number;
     components: Record<string, any>;
 }
+
+export interface Slider {
+    id: string;
+    title: string;
+    tag: string;
+    description: string;
+    highlight: string;
+    image: string;
+    brand: string;
+    price: number;
+    active: boolean;
+    order: number;
+    specs: {
+        icon: string;
+        label: string;
+        value: string;
+    }[];
+    technical_specs: {
+        cpu: string;
+        ram: string;
+        storage: string;
+        screen: string;
+    };
+    accent: string;
+    color: string;
+    created_at?: string;
+    updated_at?: string;
+}

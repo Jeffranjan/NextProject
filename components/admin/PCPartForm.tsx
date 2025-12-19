@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ArrowLeft, Plus, X } from "lucide-react";
@@ -133,12 +134,12 @@ export default function PCPartForm({ initialData, mode }: PCPartFormProps) {
 
             if (error) throw error;
 
-            alert(`Part ${mode === "create" ? "added" : "updated"} successfully!`);
+            toast.success(`Part ${mode === "create" ? "added" : "updated"} successfully!`);
             router.push("/dashboard?tab=parts"); // Redirect to parts list
             router.refresh();
         } catch (error: any) {
             console.error(`Error ${mode}ing part:`, error);
-            alert(`Error ${mode}ing part: ` + error.message);
+            toast.error(`Error ${mode}ing part: ` + error.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -255,7 +256,7 @@ export default function PCPartForm({ initialData, mode }: PCPartFormProps) {
                                             setFormData(prev => ({ ...prev, image: publicUrl }));
                                         } catch (err) {
                                             console.error("Upload failed", err);
-                                            alert("Image upload failed");
+                                            toast.error("Image upload failed");
                                         }
                                     }}
                                     className="cursor-pointer"
