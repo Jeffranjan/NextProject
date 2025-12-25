@@ -12,6 +12,21 @@ export interface Laptop {
     image: string;
     description: string;
     category: "Gaming" | "Ultrabook" | "Business" | "Creative";
+    is_featured?: boolean;
+
+    // Hero Slider Fields
+    is_hero_slider?: boolean;
+    hero_slider_order?: number;
+    hero_title?: string;
+    hero_subtitle?: string;
+    hero_cta_primary?: string;
+    hero_cta_secondary?: string;
+    hero_highlight_specs?: {
+        icon: string; // key for iconMap
+        label: string;
+        value: string;
+    }[];
+    hero_image_url?: string;
 }
 
 export interface Order {
@@ -35,30 +50,3 @@ export interface SavedBuild {
     components: Record<string, any>;
 }
 
-export interface Slider {
-    id: string;
-    title: string;
-    tag: string;
-    description: string;
-    highlight: string;
-    image: string;
-    brand: string;
-    price: number;
-    active: boolean;
-    order: number;
-    specs: {
-        icon: string;
-        label: string;
-        value: string;
-    }[];
-    technical_specs: {
-        cpu: string;
-        ram: string;
-        storage: string;
-        screen: string;
-    };
-    accent: string;
-    color: string;
-    created_at?: string;
-    updated_at?: string;
-}

@@ -32,6 +32,14 @@ export default function AddProductPage() {
         ram: "",
         storage: "",
         screen: "",
+        is_featured: false,
+        is_hero_slider: false,
+        hero_title: "",
+        hero_subtitle: "",
+        hero_cta_primary: "Shop Now",
+        hero_cta_secondary: "View Specs",
+        hero_slider_order: 1,
+        hero_image_url: "",
     });
 
     useEffect(() => {
@@ -284,13 +292,115 @@ export default function AddProductPage() {
                         </div>
                     </div>
 
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            name="is_featured"
+                            id="is_featured"
+                            checked={formData.is_featured}
+                            onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
+                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <label htmlFor="is_featured" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            Feature this laptop on homepage
+                        </label>
+                    </div>
+
+                    {/* Hero Slider Settings */}
+                    <div className="space-y-4 pt-4 border-t border-border">
+                        <div className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                name="is_hero_slider"
+                                id="is_hero_slider"
+                                checked={formData.is_hero_slider}
+                                onChange={(e) => setFormData(prev => ({ ...prev, is_hero_slider: e.target.checked }))}
+                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            />
+                            <label htmlFor="is_hero_slider" className="text-sm font-medium leading-none">
+                                Use as Hero Slider
+                            </label>
+                        </div>
+
+                        {formData.is_hero_slider && (
+                            <div className="grid gap-6 pl-6 border-l-2 border-primary/20 bg-secondary/10 p-4 rounded-r-lg">
+                                <h3 className="font-semibold text-lg">Hero Slider Settings</h3>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Hero Title</label>
+                                        <Input
+                                            name="hero_title"
+                                            value={formData.hero_title}
+                                            onChange={handleChange}
+                                            placeholder="e.g. The Ultimate Gaming Beast"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Hero Subtitle</label>
+                                        <Input
+                                            name="hero_subtitle"
+                                            value={formData.hero_subtitle}
+                                            onChange={handleChange}
+                                            placeholder="e.g. Designed for the Pro Gamer"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">CTA Primary</label>
+                                        <Input
+                                            name="hero_cta_primary"
+                                            value={formData.hero_cta_primary}
+                                            onChange={handleChange}
+                                            placeholder="Shop Now"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">CTA Secondary</label>
+                                        <Input
+                                            name="hero_cta_secondary"
+                                            value={formData.hero_cta_secondary}
+                                            onChange={handleChange}
+                                            placeholder="View Specs"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Slider Order</label>
+                                        <Input
+                                            type="number"
+                                            name="hero_slider_order"
+                                            value={formData.hero_slider_order}
+                                            onChange={handleChange}
+                                            min="1"
+                                            max="10"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Hero Image Override (URL)</label>
+                                        <Input
+                                            name="hero_image_url"
+                                            value={formData.hero_image_url}
+                                            onChange={handleChange}
+                                            placeholder="Optional: Use different image for hero"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div className="pt-4">
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? "Creating Product..." : "Create Product"}
                         </Button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

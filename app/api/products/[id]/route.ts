@@ -62,6 +62,7 @@ export async function PUT(
         const description = formData.get("description") as string;
         const specsString = formData.get("specs") as string;
         const specs = specsString ? JSON.parse(specsString) : {};
+        const isFeatured = formData.get("is_featured") === "true";
 
         let image = formData.get("existingImage") as string;
         const newImageFile = formData.get("image") as File;
@@ -102,7 +103,48 @@ export async function PUT(
                 description,
                 image,
                 specs,
+                is_featured: isFeatured,
+                is_hero_slider: formData.get("is_hero_slider") === "true",
+                hero_slider_order: formData.get("hero_slider_order") ? parseInt(formData.get("hero_slider_order") as string) : null,
+                hero_title: formData.get("hero_title") as string || null,
+                hero_subtitle: formData.get("hero_subtitle") as string || null,
+                hero_cta_primary: formData.get("hero_cta_primary") as string || null,
+                hero_cta_secondary: formData.get("hero_cta_secondary") as string || null,
+                hero_highlight_specs: formData.get("hero_highlight_specs") ? JSON.parse(formData.get("hero_highlight_specs") as string) : null,
+                hero_image_url: formData.get("hero_image_url") as string || null,
             })
+            .eq("id", id)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        return NextResponse.json(data);
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function PATCH(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const isAdmin = await verifyAdmin();
+        if (!isAdmin) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+
+        const { id } = await params;
+        const body = await request.json();
+        const serviceSupabase = getServiceSupabase();
+
+        // Validate body keys to ensure only allowed fields are updated
+        // For now, we trust the admin, but ideally we should validate
+
+        const { data, error } = await serviceSupabase
+            .from("products")
+            .update(body)
             .eq("id", id)
             .select()
             .single();

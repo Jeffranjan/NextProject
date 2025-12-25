@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 import { UserPurchaseHistory } from "@/components/dashboard/UserPurchaseHistory";
 import { UserSavedBuilds } from "@/components/dashboard/UserSavedBuilds";
 import { LayoutDashboard, Laptop, Cpu, LogOut, History, Save, GalleryHorizontal, Plus, Info } from "lucide-react";
-import { AdminSliderList } from "@/components/admin/AdminSliderList";
 
-type Tab = "overview" | "products" | "parts" | "history" | "builds" | "sliders";
+
+type Tab = "overview" | "products" | "parts" | "history" | "builds";
 
 function DashboardContent() {
     const { user, signOut, isLoading } = useAuth();
@@ -22,24 +22,12 @@ function DashboardContent() {
     const isAdmin = user?.email?.toLowerCase() === "ranjanguptajeff@gmail.com";
 
     const [activeTab, setActiveTab] = useState<Tab>(isAdmin ? "overview" : "history");
-    const [sliderCount, setSliderCount] = useState<number>(0);
 
     const searchParams = useSearchParams();
     const activeTabParam = searchParams.get("tab");
 
     useEffect(() => {
-        if (activeTab === "sliders") {
-            fetch("/api/sliders")
-                .then(res => res.json())
-                .then(data => setSliderCount(data.length))
-                .catch(err => console.error(err));
-        }
-    }, [activeTab]);
-
-
-
-    useEffect(() => {
-        if (activeTabParam && ["overview", "products", "parts", "history", "builds", "sliders"].includes(activeTabParam)) {
+        if (activeTabParam && ["overview", "products", "parts", "history", "builds"].includes(activeTabParam)) {
             setActiveTab(activeTabParam as Tab);
         }
     }, [activeTabParam]);
@@ -64,7 +52,6 @@ function DashboardContent() {
         { id: "overview", label: "Overview", icon: LayoutDashboard },
         { id: "products", label: "Laptops", icon: Laptop },
         { id: "parts", label: "PC Components", icon: Cpu },
-        { id: "sliders", label: "Sliders", icon: GalleryHorizontal },
     ];
 
     const userTabs = [
@@ -170,32 +157,7 @@ function DashboardContent() {
                         </div>
                     )}
 
-                    {activeTab === "sliders" && isAdmin && (
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-semibold tracking-tight">Sliders Management</h2>
-                                {sliderCount >= 5 ? (
-                                    <div className="flex flex-col items-end gap-1">
-                                        <Button disabled className="flex items-center gap-2 opacity-50 cursor-not-allowed">
-                                            <Plus size={16} /> Add Slider
-                                        </Button>
-                                        <p className="text-xs text-amber-500 font-medium flex items-center gap-1">
-                                            <Info size={12} /> Limit reached (Max 5)
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <Link href="/dashboard/sliders/add">
-                                        <Button className="flex items-center gap-2">
-                                            <Plus size={16} /> Add Slider
-                                        </Button>
-                                    </Link>
-                                )}
-                            </div>
-                            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                                <AdminSliderList onUpdate={setSliderCount} />
-                            </div>
-                        </div>
-                    )}
+
 
                     {activeTab === "history" && !isAdmin && (
                         <UserPurchaseHistory />

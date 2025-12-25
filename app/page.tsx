@@ -1,8 +1,7 @@
 
 import { Hero } from "@/components/ui/Hero";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { getFeaturedProducts } from "@/lib/products";
-import { getActiveSliders } from "@/lib/sliders";
+import { getFeaturedProducts, getHeroSliders } from "@/lib/products";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import { Testimonials } from "@/components/ui/Testimonials";
@@ -10,7 +9,7 @@ import { PCBuilderPromo } from "@/components/ui/PCBuilderPromo";
 
 export default async function Home() {
   const featuredProducts = await getFeaturedProducts();
-  const sliders = await getActiveSliders();
+  const sliders = await getHeroSliders();
 
   return (
     <main className="min-h-screen bg-background">

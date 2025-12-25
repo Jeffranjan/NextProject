@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
         // 3. Parse JSON Body
         const body = await request.json();
-        const { name, brand, price, category, description, image, specs } = body;
+        const { name, brand, price, category, description, image, specs, is_featured } = body;
 
         // Specs comes as stringified JSON from frontend, or we could send it as object.
         const parsedSpecs = typeof specs === 'string' ? JSON.parse(specs) : specs;
@@ -45,6 +45,15 @@ export async function POST(request: Request) {
                 description,
                 image, // This is the public URL from S3
                 specs: parsedSpecs,
+                is_featured: is_featured || false,
+                is_hero_slider: body.is_hero_slider || false,
+                hero_slider_order: body.hero_slider_order || null,
+                hero_title: body.hero_title || null,
+                hero_subtitle: body.hero_subtitle || null,
+                hero_cta_primary: body.hero_cta_primary || null,
+                hero_cta_secondary: body.hero_cta_secondary || null,
+                hero_highlight_specs: body.hero_highlight_specs || null,
+                hero_image_url: body.hero_image_url || null,
             })
             .select()
             .single();
