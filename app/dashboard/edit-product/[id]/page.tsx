@@ -10,6 +10,7 @@ import { ArrowLeft, Upload } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 const ADMIN_EMAIL = "ranjanguptajeff@gmail.com";
 
@@ -102,7 +103,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             setImagePreview(data.image);
         } catch (error) {
             console.error("Error fetching product:", error);
-            alert("Failed to load product details");
+            toast.error("Failed to load product details");
             router.push("/dashboard");
         } finally {
             setIsFetching(false);
@@ -168,12 +169,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 throw new Error(errorData.error || "Failed to update product");
             }
 
-            alert("Product updated successfully!");
-            router.push("/dashboard");
+            toast.success("Product updated successfully!");
+            router.push("/dashboard?tab=products");
             router.refresh();
         } catch (error: any) {
             console.error("Error updating product:", error);
-            alert("Error updating product: " + error.message);
+            toast.error("Error updating product: " + error.message);
         } finally {
             setIsSubmitting(false);
         }

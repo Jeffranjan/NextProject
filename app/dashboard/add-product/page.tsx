@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { ArrowLeft, Upload } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const ADMIN_EMAIL = "ranjanguptajeff@gmail.com";
 
@@ -68,7 +69,7 @@ export default function AddProductPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!imagePreview) {
-            alert("Please upload an image");
+            toast.error("Please upload an image");
             return;
         }
 
@@ -100,12 +101,12 @@ export default function AddProductPage() {
                 throw new Error(errorData.error || "Failed to create product");
             }
 
-            alert("Product added successfully!");
-            router.push("/dashboard");
+            toast.success("Product added successfully!");
+            router.push("/dashboard?tab=products");
             router.refresh();
         } catch (error: any) {
             console.error("Error adding product:", error);
-            alert("Error adding product: " + error.message);
+            toast.error("Error adding product: " + error.message);
         } finally {
             setIsSubmitting(false);
         }
