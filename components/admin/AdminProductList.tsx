@@ -138,7 +138,7 @@ export function AdminProductList() {
                                 <td className="p-4 text-center">
                                     <button
                                         onClick={() => handleUpdateProduct(product.id, { is_featured: !product.is_featured })}
-                                        className={`w-10 h-6 rounded-full p-1 transition-colors ${product.is_featured ? 'bg-primary' : 'bg-muted'}`}
+                                        className={`w-10 h-6 rounded-full p-1 transition-colors ${product.is_featured ? 'bg-indigo-500' : 'bg-muted'}`}
                                     >
                                         <div className={`w-4 h-4 rounded-full bg-white transition-transform ${product.is_featured ? 'translate-x-4' : ''}`} />
                                     </button>

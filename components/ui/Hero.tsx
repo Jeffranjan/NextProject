@@ -9,7 +9,6 @@ import { useCart } from "@/app/context/CartContext";
 import { useRouter } from "next/navigation";
 import { Laptop } from "@/lib/types";
 
-
 const iconMap: Record<string, any> = {
     Cpu, Zap, Battery, Star, Shield, Laptop: LaptopIcon, Tablet, Monitor, Mouse, Keyboard
 };
@@ -24,8 +23,6 @@ export function Hero({ sliders = [] }: HeroProps) {
     const { addItem } = useCart();
     const router = useRouter();
     const [isPaused, setIsPaused] = useState(false);
-
-
 
     const handleShopNow = () => {
         const currentSlide = sliders[current];
@@ -82,9 +79,9 @@ export function Hero({ sliders = [] }: HeroProps) {
     const display = {
         title: currentSlide.hero_title || currentSlide.name,
         highlight: currentSlide.hero_subtitle || currentSlide.brand,
-        description: currentSlide.description, // Or allow hero specific description if added later
-        tag: "New Arrival", // Default for now, or use category
-        accent: "bg-primary", // Default accent
+        description: currentSlide.description,
+        tag: "New Arrival",
+        accent: "bg-primary",
         image: currentSlide.hero_image_url || currentSlide.image,
         specs: currentSlide.hero_highlight_specs || [
             { icon: "Cpu", label: "CPU", value: currentSlide.specs.cpu },
@@ -95,21 +92,22 @@ export function Hero({ sliders = [] }: HeroProps) {
 
     return (
         <section
-            className="relative min-h-[90vh] flex flex-col pt-32 overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background"
+            className="relative h-[100dvh] flex flex-col pt-20 lg:pt-24 overflow-hidden bg-gradient-to-b from-background via-secondary/30 to-background"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            {/* Background Ambient Glow - Changes with slide */}
+            {/* Background Ambient Glow */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none transition-colors duration-1000">
-                <div className={`absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full blur-[100px] opacity-20 transition-colors duration-1000 ${display.accent.replace('bg-', 'bg-')}`} />
-                <div className={`absolute top-[40%] -left-[10%] w-[500px] h-[500px] rounded-full blur-[100px] opacity-10 transition-colors duration-1000 ${display.accent.replace('bg-', 'bg-')}`} />
+                <div className={`absolute -top-[20%] -right-[10%] w-[50vh] h-[50vh] lg:w-[600px] lg:h-[600px] rounded-full blur-[100px] opacity-20 transition-colors duration-1000 ${display.accent.replace('bg-', 'bg-')}`} />
+                <div className={`absolute top-[40%] -left-[10%] w-[40vh] h-[40vh] lg:w-[500px] lg:h-[500px] rounded-full blur-[100px] opacity-10 transition-colors duration-1000 ${display.accent.replace('bg-', 'bg-')}`} />
             </div>
 
-            <div className="container mx-auto px-4 relative z-10 flex flex-col flex-grow h-full justify-center">
-                <div className="grid lg:grid-cols-2 gap-12 items-center flex-grow min-h-[600px]">
+            <div className="container mx-auto px-4 relative z-10 flex flex-col h-full">
+                {/* Main Content Area - Flex Grow to take available space */}
+                <div className="flex-grow grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-0">
 
-                    {/* Text Content Area */}
-                    <div className="relative h-full flex flex-col justify-center py-12 lg:py-0">
+                    {/* Left Column: Text Content */}
+                    <div className="relative flex flex-col justify-center h-full order-2 lg:order-1 pt-4 lg:pt-0">
                         <AnimatePresence initial={false} mode="wait" custom={direction}>
                             <motion.div
                                 key={current}
@@ -124,8 +122,8 @@ export function Hero({ sliders = [] }: HeroProps) {
                                 }}
                                 className="relative w-full"
                             >
-                                <div className="space-y-8 text-center lg:text-left">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary border border-border/50 text-xs font-medium text-muted-foreground">
+                                <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary border border-border/50 text-xs font-medium text-muted-foreground mx-auto lg:mx-0">
                                         <span className="relative flex h-2 w-2">
                                             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${display.accent}`}></span>
                                             <span className={`relative inline-flex rounded-full h-2 w-2 ${display.accent}`}></span>
@@ -133,19 +131,19 @@ export function Hero({ sliders = [] }: HeroProps) {
                                         {display.tag}
                                     </div>
 
-                                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-                                        {display.title}
-                                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 text-3xl md:text-5xl mt-4 pb-2">
+                                    <h1 className="font-bold tracking-tight leading-none">
+                                        <span className="block text-[clamp(2rem,4vw,3.5rem)] mb-2">{display.title}</span>
+                                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-gray-500 text-[clamp(1.25rem,2.5vw,2.5rem)] pb-2">
                                             {display.highlight}
                                         </span>
                                     </h1>
 
-                                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                                    <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed line-clamp-3">
                                         {display.description}
                                     </p>
 
-                                    {/* Mobile Only Image Injection */}
-                                    <div className="relative w-full aspect-[4/3] max-h-[300px] block lg:hidden my-8">
+                                    {/* Mobile Image (Visible < lg) */}
+                                    <div className="relative w-full h-[25vh] max-h-[300px] lg:hidden my-4 block">
                                         <div className="absolute inset-0 flex items-center justify-center">
                                             <Image
                                                 src={display.image}
@@ -153,7 +151,7 @@ export function Hero({ sliders = [] }: HeroProps) {
                                                 fill
                                                 className="object-contain"
                                                 priority={current === 0}
-                                                sizes="(max-width: 768px) 100vw, 400px"
+                                                sizes="(max-width: 1024px) 80vw, 400px"
                                             />
                                         </div>
                                     </div>
@@ -161,7 +159,7 @@ export function Hero({ sliders = [] }: HeroProps) {
                                     <div className="flex flex-col sm:flex-row w-full sm:w-auto items-center gap-4 justify-center lg:justify-start">
                                         <Button
                                             size="lg"
-                                            className="h-12 px-8 text-base group w-full sm:w-auto"
+                                            className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base group w-full sm:w-auto"
                                             onClick={handleShopNow}
                                         >
                                             {currentSlide.hero_cta_primary || "Shop Now"}
@@ -170,21 +168,22 @@ export function Hero({ sliders = [] }: HeroProps) {
                                         <Button
                                             size="lg"
                                             variant="outline"
-                                            className="h-12 px-8 text-base w-full sm:w-auto"
+                                            className="h-10 sm:h-12 px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto"
                                             onClick={handleViewSpecs}
                                         >
                                             {currentSlide.hero_cta_secondary || "View Specs"}
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-3 gap-8 pt-8 border-t border-border/50">
+                                    {/* Specs Grid */}
+                                    <div className="grid grid-cols-3 gap-4 lg:gap-8 pt-4 lg:pt-8 border-t border-border/50">
                                         {display.specs?.map((spec, idx) => {
                                             const Icon = iconMap[spec.icon] || Star;
                                             return (
-                                                <div key={idx} className="space-y-2">
-                                                    <Icon className={`w-6 h-6 mx-auto lg:mx-0 ${display.accent.replace('bg-', 'text-')}`} />
-                                                    <h4 className="font-semibold">{spec.value}</h4>
-                                                    <p className="text-sm text-muted-foreground">{spec.label}</p>
+                                                <div key={idx} className="space-y-1 lg:space-y-2">
+                                                    <Icon className={`w-5 h-5 lg:w-6 lg:h-6 mx-auto lg:mx-0 ${display.accent.replace('bg-', 'text-')}`} />
+                                                    <h4 className="font-semibold text-sm lg:text-base truncate">{spec.value}</h4>
+                                                    <p className="text-xs text-muted-foreground truncate">{spec.label}</p>
                                                 </div>
                                             );
                                         })}
@@ -194,8 +193,8 @@ export function Hero({ sliders = [] }: HeroProps) {
                         </AnimatePresence>
                     </div>
 
-                    {/* Visual/Image Area - Desktop Only */}
-                    <div className="relative h-[400px] lg:h-[600px] hidden lg:flex items-center justify-center lg:translate-x-12">
+                    {/* Right Column: Desktop Image Area (Hidden < lg) */}
+                    <div className="relative h-full hidden lg:flex items-center justify-center order-1 lg:order-2">
                         <AnimatePresence initial={false} mode="wait" custom={direction}>
                             <motion.div
                                 key={current}
@@ -208,34 +207,29 @@ export function Hero({ sliders = [] }: HeroProps) {
                                     x: { type: "spring", stiffness: 300, damping: 30 },
                                     opacity: { duration: 0.2 }
                                 }}
-                                className="absolute w-full max-w-xl"
+                                className="absolute w-full h-[60vh] max-h-[600px] flex items-center justify-center"
                             >
-                                <div className="relative aspect-[4/3] w-full">
-                                    {/* Main Image Area - Floating */}
-                                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                                        <div className="relative w-full h-full flex items-center justify-center">
-                                            <Image
-                                                src={display.image}
-                                                alt={display.title}
-                                                fill
-                                                className="object-contain"
-                                                priority={current === 0}
-                                                sizes="(max-width: 1200px) 50vw, 600px"
-                                            />
-                                        </div>
-                                    </div>
+                                <div className="relative w-full h-full">
+                                    <Image
+                                        src={display.image}
+                                        alt={display.title}
+                                        fill
+                                        className="object-contain"
+                                        priority={current === 0}
+                                        sizes="(min-width: 1024px) 50vw, 800px"
+                                    />
                                 </div>
                             </motion.div>
                         </AnimatePresence>
                     </div>
                 </div>
 
-                {/* Navigation Controls - Static, Below Content */}
-                <div className="w-full flex items-center justify-center gap-4 py-8 z-20 mt-8 mb-4">
+                {/* Navigation Controls - Always at bottom, relative height */}
+                <div className="w-full flex items-center justify-center gap-4 py-4 lg:py-8 z-20 shrink-0">
                     <Button
                         variant="outline"
                         size="icon"
-                        className="rounded-full w-10 h-10 bg-background/50 backdrop-blur-sm hover:bg-background"
+                        className="rounded-full w-8 h-8 lg:w-10 lg:h-10 bg-background/50 backdrop-blur-sm hover:bg-background"
                         onClick={prevSlide}
                     >
                         <ChevronLeft className="w-4 h-4" />
@@ -247,9 +241,10 @@ export function Hero({ sliders = [] }: HeroProps) {
                                 key={idx}
                                 onClick={() => goToSlide(idx)}
                                 className={`w-2 h-2 rounded-full transition-all duration-300 ${current === idx
-                                    ? `w-8 ${display.accent}`
+                                    ? `w-6 lg:w-8 ${display.accent}`
                                     : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
                                     }`}
+                                aria-label={`Go to slide ${idx + 1}`}
                             />
                         ))}
                     </div>
@@ -257,7 +252,7 @@ export function Hero({ sliders = [] }: HeroProps) {
                     <Button
                         variant="outline"
                         size="icon"
-                        className="rounded-full w-10 h-10 bg-background/50 backdrop-blur-sm hover:bg-background"
+                        className="rounded-full w-8 h-8 lg:w-10 lg:h-10 bg-background/50 backdrop-blur-sm hover:bg-background"
                         onClick={nextSlide}
                     >
                         <ChevronRight className="w-4 h-4" />

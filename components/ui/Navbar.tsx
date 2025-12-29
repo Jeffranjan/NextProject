@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Search, Menu, X, Laptop, User } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "./Button";
 import { cn } from "@/lib/utils";
@@ -55,11 +55,11 @@ export function Navbar() {
                         : "bg-transparent"
                 )}
             >
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="container mx-auto px-4 h-20 flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="p-2 bg-primary rounded-lg text-primary-foreground group-hover:scale-105 transition-transform">
-                            <Laptop size={20} />
+                        <div className="relative h-12 w-12 group-hover:scale-105 transition-transform">
+                            <img src="/images/mahadev_logo.png" alt="Mahadev Computers" className="w-full h-full object-contain" />
                         </div>
                         <span className="text-xl font-bold tracking-tight">Mahadev Computers</span>
                     </Link>
