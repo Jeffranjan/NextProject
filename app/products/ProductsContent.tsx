@@ -5,6 +5,8 @@ import { Laptop } from "@/lib/types";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { useSearchParams, useRouter } from "next/navigation";
+import { ProductModal } from "@/components/ui/ProductModal";
 
 const categories = ["All", "Gaming", "Ultrabook", "Business", "Creative"];
 
@@ -14,6 +16,17 @@ interface ProductsContentProps {
 
 export function ProductsContent({ products }: ProductsContentProps) {
     const [activeCategory, setActiveCategory] = useState("All");
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    const selectedProductId = searchParams.get("product");
+    const selectedProduct = selectedProductId
+        ? products.find((p) => p.id === selectedProductId)
+        : null;
+
+    const handleCloseModal = () => {
+        router.replace("/products", { scroll: false });
+    };
 
     const filteredProducts =
         activeCategory === "All"
@@ -60,6 +73,15 @@ export function ProductsContent({ products }: ProductsContentProps) {
                 <div className="text-center py-24 text-muted-foreground">
                     No laptops found in this category.
                 </div>
+            )}
+
+            {/* Context-aware Product Modal */}
+            {selectedProduct && (
+                <ProductModal
+                    product={selectedProduct}
+                    isOpen={true}
+                    onClose={handleCloseModal}
+                />
             )}
         </div>
     );

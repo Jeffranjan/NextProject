@@ -30,7 +30,12 @@ export function Hero({ sliders = [] }: HeroProps) {
     };
 
     const handleViewSpecs = () => {
-        router.push("/products");
+        const currentSlide = sliders[current];
+        if (currentSlide?.id) {
+            router.push(`/products?product=${currentSlide.id}`);
+        } else {
+            router.push("/products");
+        }
     };
 
     const nextSlide = useCallback(() => {
