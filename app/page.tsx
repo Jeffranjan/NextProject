@@ -7,6 +7,8 @@ import { ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import { Testimonials } from "@/components/ui/Testimonials";
 import { PCBuilderPromo } from "@/components/ui/PCBuilderPromo";
 
+import { RepairShowcase } from "@/components/ui/RepairShowcase";
+
 export default async function Home() {
   const featuredProducts = await getFeaturedProducts();
   const sliders = await getHeroSliders();
@@ -14,6 +16,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-background">
       <Hero sliders={sliders} />
+      <RepairShowcase />
 
       {/* Featured Section */}
       <section className="py-24 container mx-auto px-4">
