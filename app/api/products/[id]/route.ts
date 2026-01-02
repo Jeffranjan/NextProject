@@ -51,68 +51,79 @@ export async function PUT(
         }
 
         const { id } = await params;
-        const formData = await request.formData();
         const serviceSupabase = getServiceSupabase();
 
-        // Extract data
-        const name = formData.get("name") as string;
-        const brand = formData.get("brand") as string;
-        const price = formData.get("price") as string;
-        const category = formData.get("category") as string;
-        const description = formData.get("description") as string;
-        const specsString = formData.get("specs") as string;
-        const specs = specsString ? JSON.parse(specsString) : {};
-        const isFeatured = formData.get("is_featured") === "true";
+        // Check Content-Type to determine how to parse
+        const contentType = request.headers.get("content-type") || "";
+        let body: any = {};
 
-        let image = formData.get("existingImage") as string;
-        const newImageFile = formData.get("image") as File;
+        if (contentType.includes("application/json")) {
+            body = await request.json();
+        } else {
+            // Fallback for FormData (legacy/manual upload support) mechanism
+            // Ideally we move completely to client-side upload + JSON
+            const formData = await request.formData();
+            body = Object.fromEntries(formData);
 
-        // Handle new image upload if present
-        if (newImageFile && newImageFile.size > 0) {
-            const fileExt = newImageFile.name.split(".").pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${fileName}`;
+            // Handle Specs JSON
+            if (typeof body.specs === 'string') {
+                try {
+                    body.specs = JSON.parse(body.specs);
+                } catch (e) { }
+            }
+            // Handle Numbers
+            if (body.price) body.price = parseFloat(body.price);
 
-            const arrayBuffer = await newImageFile.arrayBuffer();
-            const buffer = new Uint8Array(arrayBuffer);
-
-            const { error: uploadError } = await serviceSupabase.storage
-                .from("products")
-                .upload(filePath, buffer, {
-                    contentType: newImageFile.type,
-                    upsert: false
-                });
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = serviceSupabase.storage
-                .from("products")
-                .getPublicUrl(filePath);
-
-            image = publicUrl;
+            // Handle Images manually if passed as files (Basic support for single image old flow)
+            const newImageFile = formData.get("image") as File;
+            if (newImageFile && newImageFile.size > 0) {
+                // ... (Keep existing upload logic if absolutely needed, but for now assuming we leverage client-side upload)
+                const fileExt = newImageFile.name.split(".").pop();
+                const fileName = `${Math.random()}.${fileExt}`;
+                const filePath = `${fileName}`;
+                const arrayBuffer = await newImageFile.arrayBuffer();
+                const buffer = new Uint8Array(arrayBuffer);
+                const { error: uploadError } = await serviceSupabase.storage.from("products").upload(filePath, buffer, { contentType: newImageFile.type, upsert: false });
+                if (!uploadError) {
+                    const { data: { publicUrl } } = serviceSupabase.storage.from("products").getPublicUrl(filePath);
+                    body.image = publicUrl;
+                    body.images = [publicUrl]; // Reset to single if uploading new file via legacy
+                }
+            }
         }
 
-        // Update product
+        const { name, brand, price, category, description, image, images, specs, is_featured } = body;
+
+        // Ensure consistency
+        let finalImages = images;
+        if (!finalImages && image) {
+            finalImages = [image];
+        }
+        const finalImage = image || (finalImages && finalImages.length > 0 ? finalImages[0] : null);
+
+        const updateData: any = {
+            name,
+            brand,
+            price,
+            category,
+            description,
+            image: finalImage,
+            images: finalImages,
+            specs,
+            is_featured: Boolean(is_featured),
+            is_hero_slider: Boolean(body.is_hero_slider),
+            hero_slider_order: body.hero_slider_order ? parseInt(body.hero_slider_order) : null,
+            hero_title: body.hero_title || null,
+            hero_subtitle: body.hero_subtitle || null,
+            hero_cta_primary: body.hero_cta_primary || null,
+            hero_cta_secondary: body.hero_cta_secondary || null,
+            hero_highlight_specs: body.hero_highlight_specs || null,
+            hero_image_url: body.hero_image_url || null,
+        };
+
         const { data, error } = await serviceSupabase
             .from("products")
-            .update({
-                name,
-                brand,
-                price: parseFloat(price),
-                category,
-                description,
-                image,
-                specs,
-                is_featured: isFeatured,
-                is_hero_slider: formData.get("is_hero_slider") === "true",
-                hero_slider_order: formData.get("hero_slider_order") ? parseInt(formData.get("hero_slider_order") as string) : null,
-                hero_title: formData.get("hero_title") as string || null,
-                hero_subtitle: formData.get("hero_subtitle") as string || null,
-                hero_cta_primary: formData.get("hero_cta_primary") as string || null,
-                hero_cta_secondary: formData.get("hero_cta_secondary") as string || null,
-                hero_highlight_specs: formData.get("hero_highlight_specs") ? JSON.parse(formData.get("hero_highlight_specs") as string) : null,
-                hero_image_url: formData.get("hero_image_url") as string || null,
-            })
+            .update(updateData)
             .eq("id", id)
             .select()
             .single();
@@ -121,6 +132,7 @@ export async function PUT(
 
         return NextResponse.json(data);
     } catch (error: any) {
+        console.error("Error updating product:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

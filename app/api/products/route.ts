@@ -21,19 +21,25 @@ export async function POST(request: Request) {
 
         // 3. Parse JSON Body
         const body = await request.json();
-        const { name, brand, price, category, description, image, specs, is_featured } = body;
+        const { name, brand, price, category, description, image, images, specs, is_featured } = body;
 
         // Specs comes as stringified JSON from frontend, or we could send it as object.
         const parsedSpecs = typeof specs === 'string' ? JSON.parse(specs) : specs;
 
-        if (!image) {
-            return NextResponse.json({ error: "Image URL is required" }, { status: 400 });
+        if (!image && (!images || images.length === 0)) {
+            return NextResponse.json({ error: "At least one image is required" }, { status: 400 });
         }
+
+        // Prepare images array
+        let finalImages = images || [];
+        if (finalImages.length === 0 && image) {
+            finalImages = [image];
+        }
+        // Ensure primary image is set
+        const finalImage = image || finalImages[0];
 
         // 4. Insert Product using Service Role (Bypass DB RLS)
         const serviceSupabase = getServiceSupabase();
-
-
 
         const { data, error } = await serviceSupabase
             .from("products")
@@ -43,7 +49,8 @@ export async function POST(request: Request) {
                 price: parseFloat(price),
                 category,
                 description,
-                image, // This is the public URL from S3
+                image: finalImage,
+                images: finalImages,
                 specs: parsedSpecs,
                 is_featured: is_featured || false,
                 is_hero_slider: body.is_hero_slider || false,

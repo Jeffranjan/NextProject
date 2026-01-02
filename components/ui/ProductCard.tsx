@@ -28,7 +28,7 @@ export function ProductCard({ product, priority }: ProductCardProps) {
                 {/* Image Area */}
                 <div className="relative aspect-[16/10] bg-secondary/50 overflow-hidden">
                     <Image
-                        src={product.image}
+                        src={product.images?.[0] || product.image}
                         alt={product.name}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"

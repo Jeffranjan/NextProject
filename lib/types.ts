@@ -10,6 +10,7 @@ export interface Laptop {
         screen: string;
     };
     image: string;
+    images?: string[]; // Multiple images support
     description: string;
     category: "Gaming" | "Ultrabook" | "Business" | "Creative";
     is_featured?: boolean;

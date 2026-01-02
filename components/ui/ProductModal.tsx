@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, ShoppingCart, Check } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./Button";
+import { ImageCarousel } from "./ImageCarousel";
 import { useCart } from "@/app/context/CartContext";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -55,13 +56,11 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                     >
                         <div className="grid md:grid-cols-2 h-full overflow-y-auto md:overflow-hidden">
                             {/* Image Section */}
+                            {/* Image Section */}
                             <div className="relative h-64 md:h-auto bg-secondary/30 min-h-[300px]">
-                                <Image
-                                    src={product.image}
+                                <ImageCarousel
+                                    images={product.images && product.images.length > 0 ? product.images : [product.image]}
                                     alt={product.name}
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                             </div>
 

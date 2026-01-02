@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { ProductImageUploader } from "@/components/ui/ProductImageUploader";
 
 const ADMIN_EMAIL = "ranjanguptajeff@gmail.com";
 
@@ -22,9 +23,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [existingImage, setExistingImage] = useState<string>("");
+    const [images, setImages] = useState<string[]>([]);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -99,8 +98,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 hero_slider_order: data.hero_slider_order || 1,
                 hero_image_url: data.hero_image_url || "",
             });
-            setExistingImage(data.image);
-            setImagePreview(data.image);
+            // Handle Images: Prefer data.images array. Fallback to data.image wrapped in array.
+            if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                setImages(data.images);
+            } else if (data.image) {
+                setImages([data.image]);
+            }
         } catch (error) {
             console.error("Error fetching product:", error);
             toast.error("Failed to load product details");
@@ -115,53 +118,30 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            const formDataToSend = new FormData();
-            formDataToSend.append("name", formData.name);
-            formDataToSend.append("brand", formData.brand);
-            formDataToSend.append("price", formData.price);
-            formDataToSend.append("category", formData.category);
-            formDataToSend.append("description", formData.description);
-            formDataToSend.append("existingImage", existingImage);
-            formDataToSend.append("existingImage", existingImage);
-            formDataToSend.append("is_featured", String(formData.is_featured));
-
-            // Hero fields
-            formDataToSend.append("is_hero_slider", String(formData.is_hero_slider));
-            formDataToSend.append("hero_title", formData.hero_title);
-            formDataToSend.append("hero_subtitle", formData.hero_subtitle);
-            formDataToSend.append("hero_cta_primary", formData.hero_cta_primary);
-            formDataToSend.append("hero_cta_secondary", formData.hero_cta_secondary);
-            formDataToSend.append("hero_slider_order", String(formData.hero_slider_order));
-            formDataToSend.append("hero_image_url", formData.hero_image_url);
-
-            if (imageFile) {
-                formDataToSend.append("image", imageFile);
-            }
-
             const specs = {
                 cpu: formData.cpu,
                 ram: formData.ram,
                 storage: formData.storage,
                 screen: formData.screen,
             };
-            formDataToSend.append("specs", JSON.stringify(specs));
 
+            const payload = {
+                ...formData,
+                images: images,
+                image: images.length > 0 ? images[0] : "", // Sync main image
+                specs: JSON.stringify(specs),
+            };
+
+            // Using standard fetch logic (POST/PUT JSON)
             const response = await fetch(`/api/products/${id}`, {
                 method: "PUT",
-                body: formDataToSend,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -314,34 +294,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
                     {/* Image Upload */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Product Image</label>
-                        <div className="flex items-center gap-4">
-                            <div className="relative w-32 h-32 bg-secondary/30 rounded-lg border border-dashed border-border flex items-center justify-center overflow-hidden">
-                                {imagePreview ? (
-                                    <Image
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                ) : (
-                                    <Upload className="text-muted-foreground" />
-                                )}
-                            </div>
-                            <div className="flex-1">
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="cursor-pointer"
-                                />
-                                <p className="text-xs text-muted-foreground mt-2">
-                                    Leave empty to keep existing image.
-                                </p>
-                            </div>
-                        </div>
+                        <ProductImageUploader images={images} setImages={setImages} />
                     </div>
-
 
 
                     <div className="flex items-center space-x-2">

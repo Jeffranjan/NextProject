@@ -11,6 +11,7 @@ import { ArrowLeft, Upload } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
+import { ProductImageUploader } from "@/components/ui/ProductImageUploader";
 
 const ADMIN_EMAIL = "ranjanguptajeff@gmail.com";
 
@@ -20,8 +21,7 @@ export default function AddProductPage() {
     const supabase = createClient();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [images, setImages] = useState<string[]>([]);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -58,18 +58,10 @@ export default function AddProductPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!imagePreview) {
-            toast.error("Please upload an image");
+        if (images.length === 0) {
+            toast.error("Please upload at least one image");
             return;
         }
 
@@ -86,7 +78,8 @@ export default function AddProductPage() {
 
             const payload = {
                 ...formData,
-                image: imagePreview,
+                image: images[0], // Main image for backward compatibility
+                images: images,
                 specs: JSON.stringify(specs),
             };
 
@@ -246,51 +239,7 @@ export default function AddProductPage() {
 
                     {/* Image Upload */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Product Image</label>
-                        <div className="flex items-center gap-4">
-                            <div className="relative w-32 h-32 bg-secondary/30 rounded-lg border border-dashed border-border flex items-center justify-center overflow-hidden">
-                                {imagePreview ? (
-                                    <Image
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                ) : (
-                                    <Upload className="text-muted-foreground" />
-                                )}
-                            </div>
-                            <div className="flex-1">
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (!file) return;
-
-
-                                        const res = await fetch("/api/upload/presign", {
-                                            method: "POST",
-                                            body: JSON.stringify({ fileName: file.name, fileType: file.type }),
-                                        });
-                                        const { uploadUrl, publicUrl } = await res.json();
-
-
-                                        await fetch(uploadUrl, {
-                                            method: "PUT",
-                                            body: file,
-                                            headers: { "Content-Type": file.type },
-                                        });
-
-                                        setImagePreview(publicUrl);
-                                    }}
-                                    className="cursor-pointer"
-                                />
-                                <p className="text-xs text-muted-foreground mt-2">
-                                    Recommended: 800x600px or larger. Max 5MB.
-                                </p>
-                            </div>
-                        </div>
+                        <ProductImageUploader images={images} setImages={setImages} />
                     </div>
 
                     <div className="flex items-center space-x-2">
